@@ -430,8 +430,8 @@ contract Escrow is ReentrancyGuard{
         uint256 maxBasisPoints = localVariables[uint256(LocalVariablesIndex.MAXIMUM_BASIS_POINTS)];
 
         require(
-            (basisPointsForSender >= 0) && (basisPointsForSender <= maxBasisPoints),
-            "Error: makeArbitrationSplitDecision cannot give all of the money to one address. Use makeArbitrationSimpleDecision instead."
+            basisPointsForSender <= maxBasisPoints,
+            "Error: Too many basis points."
         );
 
         Transaction storage currentTransaction = getTransactionFromTransactionId(transactionId);
