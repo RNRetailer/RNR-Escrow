@@ -6,7 +6,7 @@ Buy and sell anything without getting scammed.
 Uses Random Number Retailer as its source of on chain randomness.
 
 # Sepolia Smart Contract
-https://sepolia.etherscan.io/address/0x1d4992b57e4f965b42b387ad20c08ebaab2b8c73
+https://sepolia.etherscan.io/address/0x05b0e12a6F09840ff325911B86f00af38f781841
 
 # Demo Website
 https://rnretailer.github.io/RNR-Escrow/escrow-test-website-sepolia/
