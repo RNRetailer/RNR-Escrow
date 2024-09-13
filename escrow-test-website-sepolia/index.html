@@ -179,15 +179,7 @@
 			    <!-- Button -->
 			    <div class="form-group" style="margin-bottom:15px;">
 			       <div class="col-md-6" style="margin-top:15px;">
-				  <button type="button" onclick="makeArbitrationSimpleDecision()" id="makeArbitrationSimpleDecisionButton" name="makeArbitrationSimpleDecisionButton" class="btn btn-primary">make Arbitration Simple Decision</button>
-			       </div>
-			    </div>
-			    
-
-			    <!-- Button -->
-			    <div class="form-group" style="margin-bottom:15px;">
-			       <div class="col-md-6" style="margin-top:15px;">
-				  <button type="button" onclick="makeArbitrationSplitDecision()" id="makeArbitrationSplitDecisionButton" name="makeArbitrationSplitDecisionButton" class="btn btn-primary">make Arbitration Split Decision</button>
+				  <button type="button" onclick="makeArbitrationDecision2()" id="makeArbitrationDecision" name="makeArbitrationDecision" class="btn btn-primary">make Arbitration Decision</button>
 			       </div>
 			    </div>
 			    
@@ -1565,30 +1557,12 @@
 				"type": "string"
 			},
 			{
-				"internalType": "enum Escrow.MoneyStatus",
-				"name": "decision",
-				"type": "uint8"
-			}
-		],
-		"name": "makeArbitrationSimpleDecision",
-		"outputs": [],
-		"stateMutability": "nonpayable",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "string",
-				"name": "transactionId",
-				"type": "string"
-			},
-			{
 				"internalType": "uint16",
 				"name": "basisPointsForReceiver",
 				"type": "uint16"
 			}
 		],
-		"name": "makeArbitrationSplitDecision",
+		"name": "makeArbitrationDecision",
 		"outputs": [],
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -2127,7 +2101,7 @@
 ]
 		
 	    const rnrContractAddress = '0xd058eA7e3DfE100775Ce954F15bB88257CC10191';
-	    const escrowContractAddress = '0x1d4992b57E4f965B42b387Ad20C08EBaaB2B8C73';
+	    const escrowContractAddress = '0x05b0e12a6F09840ff325911B86f00af38f781841';
 	    const chainID = 11155111;
 	  
 	    async function connectWallet(){
@@ -2785,61 +2759,28 @@
 	       
 	       }
 	       
-	       async function makeArbitrationSimpleDecision(){
-		const transactionId = verifyTxId(prompt("Transaction ID:"));
-
-		if (!transactionId){
-		    return;
-		}
-
-		const payToReceiver = confirm("Should the money go to the receiver?");
-
-		let moneyStatus;
-
-		if (payToReceiver){
-		    moneyStatus = 1;
-		}
-		else{
-		    moneyStatus = 2;
-		}
-
-		const metamaskSender = window.ethereumAddresses[0];
-
-		window.escrowContract.methods.makeArbitrationSimpleDecision(transactionId, moneyStatus).send({
-		    'from': metamaskSender,
-		})
-		.on('confirmation', function(confirmationNumber, receipt){
-			if (confirmationNumber == 1){
-			    alert('makeArbitrationSimpleDecision successful!');
-			}
-		})
-		.on('error', function(error, receipt){
-		    alert('makeArbitrationSimpleDecision failed. Please try again.');
-		});
-	       }
-	       
-	     async function makeArbitrationSplitDecision(){
+	     async function makeArbitrationDecision2(){
 	     	const transactionId = verifyTxId(prompt("Transaction ID:"));
 
-		if (!transactionId){
-		    return;
-		}
-		
-		const basisPointsForReceiver = getBasisPoints('What percentage does the receiver get?');
-	         
-		const metamaskSender = window.ethereumAddresses[0];
-
-		window.escrowContract.methods.makeArbitrationSplitDecision(transactionId, basisPointsForReceiver).send({
-		    'from': metamaskSender,
-		})
-		.on('confirmation', function(confirmationNumber, receipt){
-			if (confirmationNumber == 1){
-			    alert('makeArbitrationSplitDecision successful!');
+			if (!transactionId){
+			    return;
 			}
-		})
-		.on('error', function(error, receipt){
-		    alert('makeArbitrationSplitDecision failed. Please try again.');
-		});	        	     
+
+			const basisPointsForReceiver = getBasisPoints('What percentage does the receiver get?');
+			      
+			const metamaskSender = window.ethereumAddresses[0];
+
+			window.escrowContract.methods.makeArbitrationDecision(transactionId, basisPointsForReceiver).send({
+			    'from': metamaskSender,
+			})
+			.on('confirmation', function(confirmationNumber, receipt){
+				if (confirmationNumber == 1){
+				    alert('makeArbitrationDecision successful!');
+				}
+			})
+			.on('error', function(error, receipt){
+			    alert('makeArbitrationDecision failed. Please try again.');
+			});	        	     
 	     }
 	     
 	     async function requestPayoutAfterArbitrationGracePeriodEnds(){

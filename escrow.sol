@@ -2,73 +2,108 @@
 pragma solidity ^0.8.26;
 
 //import "@openzeppelin/contracts/utils/Create2.sol";
-import "@openzeppelin/contracts/utils/Strings.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
-import "https://github.com/RNRetailer/RandomNumberRetailer/blob/main/RandomNumberRetailerInterface.sol";
+
+interface RandomNumberRetailerInterface {
+    struct Proof {
+        uint256[2] pk;
+        uint256[2] gamma;
+        uint256 c;
+        uint256 s;
+        uint256 seed;
+        address uWitness;
+        uint256[2] cGammaWitness;
+        uint256[2] sHashWitness;
+        uint256 zInv;
+    }
+
+    struct RequestCommitment {
+        uint64 blockNum;
+        uint256 subId;
+        uint32 callbackGasLimit;
+        uint32 numWords;
+        address sender;
+        bytes extraArgs;
+    }
+
+    function priceOfARandomNumberInWei() external view returns (uint256 priceOfARandomNumberInWei);
+
+    function requestRandomNumbersSynchronousUsingVRFv2Seed(
+        uint256 amountOfRandomNumbersToRequest, 
+        Proof memory proof, 
+        RequestCommitment memory rc
+    ) external payable returns (uint256[] memory randomNumbersToReturn);
+}
+
+interface EscrowHelpersInterface {
+    function toString(uint256 value) external pure returns (string memory); 
+
+    function substring(string memory str, uint256 startIndex, uint256 endIndex) pure external returns (string memory substr); 
+
+    function stringToUint(string memory numString) external pure returns(uint256 val); 
+
+    function hexcharToByte(bytes1 char) external pure returns (uint8);
+
+    function stringToAddress(string memory str) external pure returns (address addr);
+
+    function char(bytes1 b) external pure returns (bytes1 c);
+
+    function addressToAsciiString(address x) external pure returns (string memory);
+
+    function isArbitratorAddressInArray(address arbitratorToCheck, address[] memory arbitratorAddressArray) external pure returns (bool);
+}
+
+enum MoneyStatus {
+    MONEY_IN_ESCROW,
+    MONEY_RELEASED_TO_RECEIVER,
+    MONEY_RETURNED_TO_SENDER,
+    MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER
+}
+
+enum ArbitrationStatus{
+    NOT_IN_ARBITRATION,
+    IN_ARBITRATION,
+    ARBITRATION_COMPLETE
+}
+
+enum ArbitratorStatus{
+    NOT_AN_ARBITRATOR,
+    VALID_ARBITRATOR,
+    BANNED_ARBITRATOR
+}
+
+enum JuryVote{
+    NOT_YET_VOTED,
+    DECISION_WAS_VALID,
+    DECISION_WAS_INVALID
+}
+
+enum TrialStatus{
+    TRIAL_HAS_NOT_BEEN_INVOKED,
+    TRIAL_ONGOING,
+    TRIAL_DECIDED
+}
+
+struct Transaction{
+    address sender;
+    address receiver;
+    uint256 amountInWei;
+    uint8 senderVote;
+    uint8 receiverVote;
+    MoneyStatus moneyStatus;
+    ArbitrationStatus arbitrationStatus;
+    uint16 senderCutInBps;
+    address arbitrator;
+    uint256 arbitrationStartBlock;
+    uint256 arbitrationEndBlock;
+    address[] juryPool;
+    JuryVote[] juryVotes;
+    TrialStatus trialStatus;
+    uint256 trialStartBlock;
+}
 
 contract Escrow is ReentrancyGuard{
-    // enums
-
-    enum VoteStatus {
-        NONE,
-        APPROVED,
-        REJECTED
-    }
-
-    enum MoneyStatus {
-        MONEY_IN_ESCROW,
-        MONEY_RELEASED_TO_RECEIVER,
-        MONEY_RETURNED_TO_SENDER,
-        MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER
-    }
-
-    enum ArbitrationStatus{
-        NOT_IN_ARBITRATION,
-        IN_ARBITRATION,
-        ARBITRATION_COMPLETE
-    }
-
-    enum ArbitratorStatus{
-        NOT_AN_ARBITRATOR,
-        VALID_ARBITRATOR,
-        BANNED_ARBITRATOR
-    }
-
-    enum JuryVote{
-        NOT_YET_VOTED,
-        DECISION_WAS_VALID,
-        DECISION_WAS_INVALID
-    }
-
-    enum TrialStatus{
-        TRIAL_HAS_NOT_BEEN_INVOKED,
-        TRIAL_ONGOING,
-        TRIAL_DECIDED
-    }
-
-    // structs
-
-    struct Transaction{
-        address sender;
-        address receiver;
-        uint256 amountInWei;
-        VoteStatus senderVote;
-        VoteStatus receiverVote;
-        MoneyStatus moneyStatus;
-        ArbitrationStatus arbitrationStatus;
-        uint16 senderCutInBps;
-        address arbitrator;
-        uint256 arbitrationStartBlock;
-        uint256 arbitrationEndBlock;
-        address[] juryPool;
-        JuryVote[] juryVotes;
-        TrialStatus trialStatus;
-        uint256 trialStartBlock;
-    }
-
-    // events
-
-    event VoteSubmitted(address indexed voter, string transactionId, VoteStatus vote);
+    event VoteSubmitted(address indexed voter, string transactionId, uint8 vote);
     event EscrowReleased(address indexed recipient, string transactionId, uint256 amountInWei);
     event ArbitrationInitiated(address indexed initiator, string transactionId, address arbitrator);
     event ArbitrationDecided(address indexed arbitrator, string transactionId, MoneyStatus decision);
@@ -107,6 +142,9 @@ contract Escrow is ReentrancyGuard{
 
     // Points to the official RandomNumberRetailer contract.
     RandomNumberRetailerInterface public constant RANDOM_NUMBER_RETAILER = RandomNumberRetailerInterface(0xd058eA7e3DfE100775Ce954F15bB88257CC10191);
+
+    // Points to EscrowHelpers contract.
+    EscrowHelpersInterface public constant Helpers = EscrowHelpersInterface(0x7f2C7FB10D365bf2a5f9F7CC9f326Cf9072970Be);
 
     uint256[] public localVariables = new uint256[](12);     
     address[] public arbitratorApplicantsAddresses = new address[](0);
@@ -159,75 +197,16 @@ contract Escrow is ReentrancyGuard{
         localVariables[uint256(LocalVariablesIndex.MINIMUM_TRANSACTION_VALUE_IN_WEI)] = _minimumTransactionValueInWei;
     }
 
-    // helper functions
+    // external views
 
-    function substring(string memory str, uint256 startIndex, uint256 endIndex) pure private returns (string memory substr) {
-        bytes memory strBytes = bytes(str);
-        bytes memory result = new bytes(endIndex - startIndex);
-
-        for(uint256 i = startIndex; i < endIndex; i++) {
-            result[i - startIndex] = strBytes[i];
-        }
-
-        substr = string(result);
+    function getJurorsForTransactionId(string calldata transactionId) external view returns (address[] memory jurorsForSpecifiedTransaction){
+        Transaction memory specifiedTransaction = getTransactionFromTransactionId(transactionId);
+        jurorsForSpecifiedTransaction = specifiedTransaction.juryPool;
     }
 
-    function stringToUint(string memory numString) private pure returns(uint256 val) {
-        val = 0;
-
-        bytes memory stringBytes = bytes(numString);
-
-        for (uint256 i =  0; i < stringBytes.length; i++) {
-            uint256 exp = stringBytes.length - i;
-            bytes1 ival = stringBytes[i];
-            uint8 uval = uint8(ival);
-            uint256 jval = uval - uint256(0x30);
-   
-            val += (uint256(jval) * (10**(exp-1))); 
-        }
-    }
-
-    function hexCharToByte(bytes1 _char) internal pure returns (uint8) {
-        uint8 byteValue = uint8(_char);
-        if (byteValue >= uint8(bytes1('0')) && byteValue <= uint8(bytes1('9'))) {
-            return byteValue - uint8(bytes1('0'));
-        } else if (byteValue >= uint8(bytes1('a')) && byteValue <= uint8(bytes1('f'))) {
-            return 10 + byteValue - uint8(bytes1('a'));
-        } else if (byteValue >= uint8(bytes1('A')) && byteValue <= uint8(bytes1('F'))) {
-            return 10 + byteValue - uint8(bytes1('A'));
-        }
-        revert("Invalid hex character");
-    }
-
-    function stringToAddress(string memory str) private pure returns (address addr) {
-        bytes memory strBytes = bytes(str);
-        require(strBytes.length == 42, "Invalid address length");
-        bytes memory addrBytes = new bytes(20);
-
-        for (uint i = 0; i < 20; i++) {
-            addrBytes[i] = bytes1(hexCharToByte(strBytes[2 + i * 2]) * 16 + hexCharToByte(strBytes[3 + i * 2]));
-        }
-
-        addr = address(uint160(bytes20(addrBytes)));
-    }
-
-    function char(bytes1 b) internal pure returns (bytes1 c) {
-        if (uint8(b) < 10) return bytes1(uint8(b) + 0x30);
-        else return bytes1(uint8(b) + 0x57);
-    }
-
-    function addressToAsciiString(address x) internal pure returns (string memory) {
-        bytes memory s = new bytes(40);
-
-        for (uint i = 0; i < 20; i++) {
-            bytes1 b = bytes1(uint8(uint(uint160(x)) / (2**(8*(19 - i)))));
-            bytes1 hi = bytes1(uint8(b) / 16);
-            bytes1 lo = bytes1(uint8(b) - 16 * uint8(hi));
-            s[2*i] = char(hi);
-            s[2*i+1] = char(lo);            
-        }
-
-        return string(s);
+    function getJuryVotesForTransactionId(string calldata transactionId) external view returns (JuryVote[] memory juryVotesForSpecifiedTransaction){
+        Transaction memory specifiedTransaction = getTransactionFromTransactionId(transactionId);
+        juryVotesForSpecifiedTransaction = specifiedTransaction.juryVotes;
     }
 
     // escrow functions
@@ -252,27 +231,32 @@ contract Escrow is ReentrancyGuard{
         currentSenderTransactions.push(transaction);
 
         transactionId = string.concat(
-            addressToAsciiString(sender),
+            Helpers.addressToAsciiString(sender),
             "-", 
-            Strings.toString(newSenderTransactionIndex)
+            Helpers.toString(newSenderTransactionIndex)
         );
 
         receiverAddressToTransactionIdArrayMap[receiver].push(transactionId);
     }
 
     function getTransactionFromTransactionId(string memory transactionId) private view returns (Transaction storage currentTransaction){
-        string memory senderAddressHex = substring(transactionId, 0, 42);
-        address sender = stringToAddress(senderAddressHex);
+        string memory senderAddressHex = Helpers.substring(transactionId, 0, 42);
+        address sender = Helpers.stringToAddress(senderAddressHex);
 
         uint256 transactionIdLength = bytes(transactionId).length;
-        string memory currentSenderTransactionsArrayIndexString = substring(transactionId, 43, transactionIdLength);
-        uint256 currentSenderTransactionsArrayIndex = stringToUint(currentSenderTransactionsArrayIndexString);
+        string memory currentSenderTransactionsArrayIndexString = Helpers.substring(transactionId, 43, transactionIdLength);
+        uint256 currentSenderTransactionsArrayIndex = Helpers.stringToUint(currentSenderTransactionsArrayIndexString);
 
         currentTransaction = senderAddressToTransactionArrayMap[sender][currentSenderTransactionsArrayIndex];
     }
 
-    function voteOnTransaction(VoteStatus voteType, string calldata transactionId) private returns(Transaction storage currentTransaction){
+    function voteOnTransaction(uint8 voteType, string calldata transactionId) private returns(Transaction storage currentTransaction){
         currentTransaction = getTransactionFromTransactionId(transactionId);
+
+        require(
+            voteType < 3, 
+            "Error: Invalid voteType."
+        );
 
         if(msg.sender == currentTransaction.sender){
             currentTransaction.senderVote = voteType;
@@ -288,9 +272,9 @@ contract Escrow is ReentrancyGuard{
     }
 
     function approveTransaction(string calldata transactionId) external nonReentrant checkIfPaused{
-        Transaction storage currentTransaction = voteOnTransaction(VoteStatus.APPROVED, transactionId);
+        Transaction storage currentTransaction = voteOnTransaction(1, transactionId);
 
-        if((currentTransaction.senderVote == VoteStatus.APPROVED) && (currentTransaction.receiverVote == VoteStatus.APPROVED)){
+        if((currentTransaction.senderVote == 1) && (currentTransaction.receiverVote == 1)){
             require(
                 payable(currentTransaction.receiver).send(currentTransaction.amountInWei),
                 "Error: Failed to withdraw ETH to the receiver."
@@ -303,7 +287,7 @@ contract Escrow is ReentrancyGuard{
     }
 
     function rejectTransaction(string calldata transactionId) external checkIfPaused{
-        voteOnTransaction(VoteStatus.REJECTED, transactionId);
+        voteOnTransaction(2, transactionId);
     }
 
     function signUpAsArbitrator() external payable checkIfPaused{
@@ -409,15 +393,15 @@ contract Escrow is ReentrancyGuard{
         );
 
         if(msg.sender == currentTransaction.sender){
-            if(currentTransaction.senderVote != VoteStatus.REJECTED){
-                currentTransaction.senderVote = VoteStatus.REJECTED;
-                emit VoteSubmitted(msg.sender, transactionId, VoteStatus.REJECTED);
+            if(currentTransaction.senderVote != 2){
+                currentTransaction.senderVote = 2;
+                emit VoteSubmitted(msg.sender, transactionId, 2);
             }
         }
         else if(msg.sender == currentTransaction.receiver){
-            if(currentTransaction.receiverVote != VoteStatus.REJECTED){
-                currentTransaction.receiverVote = VoteStatus.REJECTED;
-                emit VoteSubmitted(msg.sender, transactionId, VoteStatus.REJECTED);
+            if(currentTransaction.receiverVote != 2){
+                currentTransaction.receiverVote = 2;
+                emit VoteSubmitted(msg.sender, transactionId, 2);
             }
         }
         else{
@@ -428,7 +412,7 @@ contract Escrow is ReentrancyGuard{
 
         require(
             msg.value >= priceOfARandomNumberInWei, 
-            string.concat("Error: You must pay at least ", Strings.toString(priceOfARandomNumberInWei), " wei to begin arbitration")
+            string.concat("Error: You must pay at least ", Helpers.toString(priceOfARandomNumberInWei), " wei to begin arbitration")
         );
 
         uint256[] memory randomNumbersFromRNRetailer = RANDOM_NUMBER_RETAILER.requestRandomNumbersSynchronousUsingVRFv2Seed{value: priceOfARandomNumberInWei}(1, proof, rc);
@@ -442,38 +426,11 @@ contract Escrow is ReentrancyGuard{
         emit ArbitrationInitiated(msg.sender, transactionId, chosenArbitrator);
     }
 
-    function makeArbitrationSimpleDecision(string calldata transactionId, MoneyStatus decision) external checkIfPaused{
-        Transaction storage currentTransaction = getTransactionFromTransactionId(transactionId);
+    function makeArbitrationDecision(string calldata transactionId, uint16 basisPointsForSender) external checkIfPaused{
+        uint256 maxBasisPoints = localVariables[uint256(LocalVariablesIndex.MAXIMUM_BASIS_POINTS)];
 
         require(
-            currentTransaction.moneyStatus == MoneyStatus.MONEY_IN_ESCROW,
-            "Error: Arbitration request denied. Money was already paid out."
-        );
-
-        require(
-            currentTransaction.arbitrator == msg.sender,
-            "Error: Only the official arbitrator for the transaction can make an arbitration decision."
-        );
-
-        if (decision == MoneyStatus.MONEY_RELEASED_TO_RECEIVER){
-            currentTransaction.senderCutInBps = 0;
-        }
-        else if (decision == MoneyStatus.MONEY_RETURNED_TO_SENDER){
-            currentTransaction.senderCutInBps = uint16(localVariables[uint256(LocalVariablesIndex.MAXIMUM_BASIS_POINTS)]);
-        }
-        else{
-            revert("Error: Invalid decision. Money must be returned to the recipient or the sender.");
-        }
-
-        currentTransaction.arbitrationStatus = ArbitrationStatus.ARBITRATION_COMPLETE;
-        currentTransaction.arbitrationEndBlock = block.number;
-
-        emit ArbitrationDecided(msg.sender, transactionId, decision);
-    }
-
-    function makeArbitrationSplitDecision(string calldata transactionId, uint16 basisPointsForReceiver) external checkIfPaused{
-        require(
-            (basisPointsForReceiver > 0) && (basisPointsForReceiver < localVariables[uint256(LocalVariablesIndex.MAXIMUM_BASIS_POINTS)]),
+            (basisPointsForSender >= 0) && (basisPointsForSender <= maxBasisPoints),
             "Error: makeArbitrationSplitDecision cannot give all of the money to one address. Use makeArbitrationSimpleDecision instead."
         );
 
@@ -489,12 +446,21 @@ contract Escrow is ReentrancyGuard{
             "Error: Only the official arbitrator for the transaction can make an arbitration decision."
         );
 
-        currentTransaction.senderCutInBps = uint16(localVariables[uint256(LocalVariablesIndex.MAXIMUM_BASIS_POINTS)]) - basisPointsForReceiver;
+        currentTransaction.senderCutInBps = basisPointsForSender;
 
         currentTransaction.arbitrationStatus = ArbitrationStatus.ARBITRATION_COMPLETE;
         currentTransaction.arbitrationEndBlock = block.number;
 
-        emit ArbitrationDecided(msg.sender, transactionId, MoneyStatus.MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER);
+        MoneyStatus status = MoneyStatus.MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER;
+
+        if(basisPointsForSender == 0){
+            status = MoneyStatus.MONEY_RELEASED_TO_RECEIVER;
+        }
+        else if(basisPointsForSender == maxBasisPoints){
+            status = MoneyStatus.MONEY_RETURNED_TO_SENDER;
+        }
+
+        emit ArbitrationDecided(msg.sender, transactionId, status);
     }
 
     function banArbitrator(address currentArbitrator) private{
@@ -539,7 +505,7 @@ contract Escrow is ReentrancyGuard{
 
         require(
             cutoffBlock < block.number,
-            string.concat("Error: The arbitrator has until block ", Strings.toString(cutoffBlock), " to make a decision.")
+            string.concat("Error: The arbitrator has until block ", Helpers.toString(cutoffBlock), " to make a decision.")
         );
 
         address currentArbitrator = currentTransaction.arbitrator;
@@ -552,7 +518,7 @@ contract Escrow is ReentrancyGuard{
 
         require(
             msg.value >= priceOfARandomNumberInWei, 
-            string.concat("Error: You must pay at least ", Strings.toString(priceOfARandomNumberInWei), " wei to ban an arbitrator for tardiness")
+            string.concat("Error: You must pay at least ", Helpers.toString(priceOfARandomNumberInWei), " wei to ban an arbitrator for tardiness")
         );
 
         uint256[] memory randomNumbersFromRNRetailer = RANDOM_NUMBER_RETAILER.requestRandomNumbersSynchronousUsingVRFv2Seed{value: priceOfARandomNumberInWei}(1, proof, rc);
@@ -636,18 +602,6 @@ contract Escrow is ReentrancyGuard{
         completePayoutAfterArbitration(currentTransaction);
     }
 
-    function isArbitratorAddressInArray(address arbitratorToCheck, address[] memory arbitratorAddressArray) private pure returns (bool) {
-        for (uint i = 0; i < arbitratorAddressArray.length; i++) {
-            address tempArbitratorAddress = arbitratorAddressArray[i];
-
-            if(arbitratorToCheck == tempArbitratorAddress){
-                return true;
-            }
-        }
-
-        return false;
-    }
-
     function selectJury(string memory transactionId, Transaction storage currentTransaction, RandomNumberRetailerInterface.Proof memory proof, RandomNumberRetailerInterface.RequestCommitment memory rc) private {
         uint256 ARBITRATORS_IN_A_JURY = localVariables[uint256(LocalVariablesIndex.ARBITRATORS_IN_A_JURY)];
         uint256 arbitratorAddressesLength = arbitratorAddresses.length;
@@ -674,7 +628,7 @@ contract Escrow is ReentrancyGuard{
                     uint256(keccak256(abi.encodePacked(block.prevrandao, block.timestamp, currentIndexOfJuryPool, currentRandomNumber, nonce))) % arbitratorAddressesLength // get random arbitrator
                 ];
 
-                if(!isArbitratorAddressInArray(arbitratorToCheck, invalidAddressesForJury)){
+                if(!Helpers.isArbitratorAddressInArray(arbitratorToCheck, invalidAddressesForJury)){
                     juryPool[currentIndexOfJuryPool++] = arbitratorToCheck;
 
                     if(currentIndexOfJuryPool != uint8(ARBITRATORS_IN_A_JURY)){
@@ -698,23 +652,27 @@ contract Escrow is ReentrancyGuard{
         emit JurySelected(transactionId, juryPool);
     }
 
-    function checkIfUserCanAffordJuryTrial(Transaction storage currentTransaction) private{
-        uint256 priceOfARandomNumberInWei = RANDOM_NUMBER_RETAILER.priceOfARandomNumberInWei();
-        uint256 priceOfRandomJurySelection = priceOfARandomNumberInWei * localVariables[uint256(LocalVariablesIndex.ARBITRATORS_IN_A_JURY)];
-
-        uint256 juryTrialTotalFee = (currentTransaction.amountInWei * localVariables[uint256(LocalVariablesIndex.JURY_TRIAL_PERCENTAGE_COST)]) / 100;
+    function getJuryTrialTotalFee(uint256 amountInWei) private view returns (uint256 juryTrialTotalFee){
+        juryTrialTotalFee = (amountInWei * localVariables[uint256(LocalVariablesIndex.JURY_TRIAL_PERCENTAGE_COST)]) / 100;
 
         uint256 juryTrialMinimumFee = localVariables[uint256(LocalVariablesIndex.JURY_TRIAL_MIN_COST_IN_WEI)];
 
         if (juryTrialTotalFee < juryTrialMinimumFee){
             juryTrialTotalFee = juryTrialMinimumFee;
         }
+    }
+
+    function checkIfUserCanAffordJuryTrial(Transaction storage currentTransaction) private{
+        uint256 priceOfARandomNumberInWei = RANDOM_NUMBER_RETAILER.priceOfARandomNumberInWei();
+        uint256 priceOfRandomJurySelection = priceOfARandomNumberInWei * localVariables[uint256(LocalVariablesIndex.ARBITRATORS_IN_A_JURY)];
+
+        uint256 juryTrialTotalFee = getJuryTrialTotalFee(currentTransaction.amountInWei);
 
         uint256 totalCostOfTrial = priceOfRandomJurySelection + juryTrialTotalFee;
 
         require(
             msg.value >= totalCostOfTrial, 
-            string.concat("Error: You must pay at least ", Strings.toString(totalCostOfTrial), " wei to invoke a jury trial for this transaction")
+            string.concat("Error: You must pay at least ", Helpers.toString(totalCostOfTrial), " wei to invoke a jury trial for this transaction")
         );
     }
 
@@ -775,7 +733,7 @@ contract Escrow is ReentrancyGuard{
             JuryVote tempVote = juryVotes[i];
 
             if(tempVote == JuryVote.NOT_YET_VOTED){
-                break;
+                return;
             }
             else if(tempVote == JuryVote.DECISION_WAS_VALID){
                 validVotes += 1;
@@ -820,7 +778,7 @@ contract Escrow is ReentrancyGuard{
 
         require(
             cutoffBlock < block.number,
-            string.concat("Error: The jury has until block ", Strings.toString(cutoffBlock), " to make a decision.")
+            string.concat("Error: The jury has until block ", Helpers.toString(cutoffBlock), " to make a decision.")
         );
 
         address[] memory juryPool = currentTransaction.juryPool;
@@ -849,7 +807,7 @@ contract Escrow is ReentrancyGuard{
 
         require(
             msg.value >= priceOfRandomJurySelection, 
-            string.concat("Error: You must pay at least ", Strings.toString(priceOfRandomJurySelection), " wei to restart the jury trial.")
+            string.concat("Error: You must pay at least ", Helpers.toString(priceOfRandomJurySelection), " wei to restart the jury trial.")
         );
 
         selectJury(transactionId, currentTransaction, proof, rc);
@@ -869,7 +827,7 @@ contract Escrow is ReentrancyGuard{
 
             require(
                 msg.value >= priceOfARandomNumberInWei,
-                string.concat("Error: You must include at least ", Strings.toString(priceOfARandomNumberInWei), " wei as payment.")
+                string.concat("Error: You must include at least ", Helpers.toString(priceOfARandomNumberInWei), " wei as payment.")
             );
 
             uint256[] memory randomNumbers = RANDOM_NUMBER_RETAILER.requestRandomNumbersSynchronousUsingVRFv2Seed{value: priceOfARandomNumberInWei}(1, proof, rc);
@@ -894,13 +852,7 @@ contract Escrow is ReentrancyGuard{
         uint256 juryPoolLength = juryPool.length;
         uint8 juryPoolLengthUint8 = uint8(juryPoolLength);
 
-        uint256 juryTrialTotalFee = (currentTransaction.amountInWei * localVariables[uint256(LocalVariablesIndex.JURY_TRIAL_PERCENTAGE_COST)]) / 100;
-
-        uint256 juryTrialMinimumFee = localVariables[uint256(LocalVariablesIndex.JURY_TRIAL_MIN_COST_IN_WEI)];
-
-        if (juryTrialTotalFee < juryTrialMinimumFee){
-            juryTrialTotalFee = juryTrialMinimumFee;
-        }
+        uint256 juryTrialTotalFee = getJuryTrialTotalFee(currentTransaction.amountInWei);
 
         uint256 totalPayoutForJury = (juryTrialTotalFee * localVariables[uint256(LocalVariablesIndex.JURY_TRIAL_JURY_FEE_PERCENTAGE)]) / 100;
         uint256 payoutForCreator = juryTrialTotalFee - totalPayoutForJury;
