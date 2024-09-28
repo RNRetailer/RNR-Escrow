@@ -1,0 +1,3754 @@
+
+<!doctype html>
+<html lang="en"  >
+<head>
+    <meta charset="utf-8" />
+<title>RNR Escrow</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
+<meta content="" name="author" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+<!-- App favicon -->
+<link rel="shortcut icon" href="/images/favicon.ico">
+    
+<!-- App css -->
+<link href="/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+<link href="/css/icons.min.css" rel="stylesheet" type="text/css" />
+<link href="/css/app.min.css" rel="stylesheet" type="text/css" />
+<link href="/css/custom-confirm.css" rel="stylesheet" type="text/css" />
+
+<style>
+    @media (max-width: 1339px) {
+      #topbar {width: 100% !important;}
+
+      #mainContent {width: 100% !important;}
+
+      #navbarconnectWalletButton {padding: 9px;}
+
+      .left-sidebar {
+        display: none;
+      }
+
+      #showMenuButton {
+        display: unset !important;
+      }
+
+      #hideSidebarButtonHolder {
+        display: unset !important;
+      }
+
+      .connectWalletButton {
+        margin-top: 0 !important; 
+        margin-left: 0 !important;
+      }
+
+      #Main{
+          margin-top: 0 !important;
+      }
+    }
+
+    @media (max-width: 723px) {
+        .view{
+            margin-top: 50px;
+        }
+    }
+
+    .subheader {
+        padding: 0 0 0 0;
+        margin: 0 0 0 0;
+        margin-right: 10px !important;
+        min-height: 43px;
+        float:right;
+        width:100%;
+        margin-top:50px;
+        color:grey;
+    }
+
+    .view{
+        text-align: center;
+        padding-bottom: 50px;
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    #transactionInformation{
+        margin-top: 15px;
+        word-wrap: break-word;
+    }
+
+    #transactionInformationForArbitration{
+        margin-top: 15px;
+        word-wrap: break-word;
+    }
+
+    #transactionSelector{
+        max-width: 100%;
+    }
+</style>
+
+<script src="js/custom-confirm.js"></script>
+<script src="js/wasm_exec.js"></script>
+
+</head>
+
+<body  class="dark-sidebar" >
+
+<div class="page-wrapper">
+    <div id="left-sidebar" class="left-sidebar" style="top: 0; overflow-y: unset;">
+    <!-- LOGO -->
+    <div class="brand" style="color:white; font-size:19px; border-bottom: 1px solid white;">
+        RNR
+        <a href="/" class="logo">
+            <span>
+                <img width="45" style="height:45px;" height="45" src="/images/logo.png" alt="logo-large" class="logo-lg logo-light">
+            </span>
+        </a>
+        Escrow
+    </div>
+    <div class="sidebar-user-pro media border-end">
+        
+        <p id="hideSidebarButtonHolder" class="mb-0" style="display: none; margin: 70px 0px 0px 0px;">                    
+            <button type="button" onclick="hideSidebar()" name="singlebutton" class="btn btn-primary hideSidebarButton" style="margin-bottom: 10px;">
+                Hide<br>Sidebar
+            </button>
+        </p>
+
+        <p class="mb-0 connectButtonHolder">                    
+            <button id="connectWalletButtonSidebar" type="button" onclick="connectWallet()" name="singlebutton" class="btn btn-primary connectWalletButton" style="margin-top: 0px; margin-left: 0;">
+                Connect<br>Wallet
+            </button>
+        </p>
+
+        <div id="blockchainAddressHolderSidebar" class="media-body ms-2 user-detail align-self-center blockchainAddressHolder blockchainAddressHolderSidebar" style="position: absolute; top: 90px; left: 16px; margin-bottom: 15px;">
+            <h5 class="m-0 fw-bold blockchainAddress" style="font-size:8px;"></h5>
+            <p class="mb-0 role"></p>
+        </div>
+    </div>
+
+    <!-- Tab panes -->
+
+    <!--end logo-->
+    <div style="margin-top:-30px;" class="menu-content h-100" data-simplebar>
+        <div class="menu-body navbar-vertical">
+            <div class="collapse navbar-collapse tab-content" id="sidebarCollapse">
+                <!-- Navigation -->
+                <ul class="navbar-nav tab-pane active" id="Main" role="tabpanel" style="margin-top:25px;">
+                    <li class="menu-label mt-0 text-primary font-12 fw-semibold"><span>Your Transactions</span><br><span
+                            class="font-10 text-secondary fw-normal">Buy & Sell</span></li>
+                
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#startTransactionView" onclick="showView('startTransactionView')">Create Transaction</a>
+                        </li><!--end nav-item-->
+                        <li class="nav-item">
+                            <a href="#manageTransactionsView" onclick="showView('manageTransactionsView')" class="nav-link ">Manage Transactions</a>
+                        </li><!--end nav-item-->
+                    </ul><!--end nav-->
+
+                    <li class="menu-label mt-0 text-primary font-12 fw-semibold"><span>Arbitration</span><br><span
+                            class="font-10 text-secondary fw-normal">Arbitrate transaction disputes</span></li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#applyToBeAnArbitratorView" onclick="showView('applyToBeAnArbitratorView')"><i
+                                class="ti menu-icon"></i><span>Apply to be an Arbitrator</span></a>
+                    </li><!--end nav-item-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#arbitrateTransactionsView" onclick="showView('arbitrateTransactionsView')"><i
+                                class="ti menu-icon"></i><span>Arbitrate Transactions</span></a>
+                    </li><!--end nav-item-->
+                    <li class="nav-item">
+                        <a class="nav-link" href="#voteOnJuryTrialsView" onclick="showView('voteOnJuryTrialsView')"><i
+                                class="ti menu-icon"></i><span>Vote on Jury Trials</span></a>
+                    </li><!--end nav-item-->  
+            </div><!--end sidebarCollapse-->
+        </div>
+    </div>
+</div>
+<!-- end left-sidenav-->
+<!-- Top Bar Start -->
+<div id="topbar" class="topbar" style="left: unset; z-index:0;right:0;position:absolute;width:calc(100% - 260px);">
+
+<!-- Navbar -->
+<nav class="navbar-custom" id="navbar-custom" style="min-height: 38px; height: 38px; max-height: 38px; margin-left:0;">
+
+    <button id="showMenuButton" type="button" onclick="showSidebar()" name="singlebutton" style="float: left; margin-left: 1px; display: none;" class="btn btn-primary showMenuButton">
+            Show Menu
+    </button>
+
+    <div class="media-body ms-2 user-detail align-self-center connectButtonHolder" style="float: right; margin-right: 1px;">
+        <button type="button" onclick="connectWallet()" name="singlebutton" class="btn btn-primary connectWalletButton">
+            Connect Wallet
+        </button>
+    </div>
+
+    <div class="media-body ms-2 user-detail align-self-center blockchainAddressHolder" style="float: right; display: hidden;">
+        <h5 class="m-0 fw-bold blockchainAddress" style="font-size:9.5px;"></h5>
+        <p class="mb-0 role" style="font-size:20px;"></p>
+    </div>
+</nav>
+<!-- end navbar-->
+
+</div>
+<!-- Top Bar End -->
+
+<div id="mainContent" style="right:0;z-index: 1;width:calc(100% - 260px);position:absolute;margin-top:50px;">
+
+    <!-- Start Transaction -->
+    <section id="startTransactionView" class="view">
+
+        <img width="250" src="/images/transactions.png">
+        
+        <h1>Create Transaction</h1>
+
+        <h6>Send ETH to the escrow smart contract and begin a transaction with an intended recipient address.</h6>
+
+        <div class="form-group" style="margin-bottom:15px;">
+            <div style="margin-top:15px;">
+                <button type="button" onclick="startTransaction()" id="startTransactionButton" name="startTransactionButton" class="btn btn-primary">Create Transaction</button>
+           </div>
+        </div>
+    </section>
+    <!-- /Start Transaction -->
+
+    <!-- Apply To Be An Arbitrator -->
+    <section id="applyToBeAnArbitratorView" class="view" style="display: none;">
+
+        <img width="250" src="/images/arbitration.png">
+        
+        <h1>Apply To Be An Arbitrator</h1>
+
+        <br>
+
+        <div class="form-group" style="margin-bottom:15px;">
+            <div style="margin-top:15px;">
+                <button type="button" onclick="signUpAsArbitrator()" id="signUpAsArbitratorButton" name="signUpAsArbitratorButton" class="btn btn-primary">Apply To Be An Arbitrator</button>
+           </div>
+        </div>
+
+        <br>
+
+        <h6>Arbitrators make money by settling transaction disputes.</h6>
+        <h6>Transaction arbitration and jury trial voting are the Arbitrator's sole responsibilities.</h6>
+        <h6>It costs <span id="arbitratorApplicationFeeInEth"></span> ETH to apply for the Arbitrator position.</h6>
+
+        <br>
+
+        <h6>Please email randomnumberretailer@gmail.com with your blockchain address and resume after applying.</h6>
+
+        <br>
+
+        <h6>Arbitrators get 75% of the arbitration fee for a contested transaction.</h6>
+        <h6>The arbitration fee for a transaction is the greater of 5% of the transaction value or .01 ETH.</h6>
+        <h6>So, the minimum fee you would receive for arbitrating a transaction is 0.0075 ETH.</h6>
+        <h6>The maximum fee is uncapped.</h6>
+
+        <br>
+
+        <h6>Arbitrators also earn money from voting in Jury Trials.</h6>
+        <h6>There are three Jurors on a Jury.</h6>
+        <h6>The Jury receives 90% of the fee paid to hold a trial.</h6>
+        <h6>So, you would receive 30% of the fee personally just for voting.</h6>
+
+        <br>
+
+        <h6>The cost to hold a Jury Trial is the greater of 10% of the transaction value or .1 ETH.</h6>
+        <h6>So, the minimum fee you would receive for voting in a Jury Trial is 0.03 ETH.</h6>
+        <h6>The maximum fee is uncapped.</h6>
+    </section>
+    <!-- /Apply To Be An Arbitrator -->
+
+    <!-- Vote On Jury Trials -->
+    <section id="voteOnJuryTrialsView" class="view" style="display: none;">
+
+        <img width="250" src="/images/jury.png">
+        
+        <h1>Vote on Jury Trials</h1>
+
+        <h6>Vote to approve or reject a previous arbitrator's decision relating to a transaction.</h6>
+
+        <select id="juryTrialSelector"></select>
+
+        <div class="form-group" style="margin-bottom:15px;">
+            <div style="margin-top:15px;">
+                <button type="button" id="castVoteAsJurorButton" name="castVoteAsJurorButton" class="btn btn-primary">Vote On Jury Trial</button>
+           </div>
+        </div>
+
+        <img id="castVoteAsJurorInProgressGif" src="/images/loading.gif" style="display:none;">
+    </section>
+    <!-- /Vote On Jury Trials -->
+
+    <!-- Manage Transactions -->
+    <section id="manageTransactionsView" class="view" style="display: none;">
+
+        <img width="250" src="/images/transactions.png">
+        
+        <h1>Manage Transactions</h1>
+
+        <h6>Approve and reject transactions, withdraw funds, call arbitration, invoke jury trials, and penalize arbitrators and jurors for tardiness.</h6>
+
+        <select id="transactionSelector" onchange="displayTransactionInformation()"></select>
+
+        <div id="transactionInformation"></div>
+
+        <div id="manageTransactionsButtons"></div>
+
+        <img id="manageTransactionInProgressGif" src="/images/loading.gif" style="display:none;">
+    </section>
+    <!-- /Manage Transactions -->
+
+    <!-- Arbitrate Transactions -->
+    <section id="arbitrateTransactionsView" class="view" style="display: none;">
+
+        <img width="250" src="/images/arbitration.png">
+        
+        <h1>Arbitrate Transactions</h1>
+
+        <h6>For these transactions, you decide what percentage of the funds go to the sender and receiver.</h6>
+
+        <select id="transactionSelectorForArbitration" onchange="displayTransactionInformationForArbitration()"></select>
+
+        <div id="transactionInformationForArbitration"></div>
+
+        <div class="form-group" style="margin-bottom:15px;">
+            <div style="margin-top:15px;">
+                <button onclick="makeArbitrationDecision()" type="button" id="makeArbitrationDecisionButton" name="makeArbitrationDecisionButton" class="btn btn-primary">Make Arbitration Decision</button>
+           </div>
+        </div>
+
+    </section>
+    <!-- /Arbitrate Transactions -->
+
+</div>
+
+<!-- Sub Header Start -->
+<div class="subheader text-end text-sm-end">
+    Random Number Retailer LLC <br>
+    randomnumberretailer@gmail.com
+</div>
+<!-- end Footer -->
+    </div>
+
+</div>
+
+<script src="/js/app.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/web3@4.12.0/dist/web3.min.js"></script>
+
+<script>
+        const rnrContractAddress = '0xd058eA7e3DfE100775Ce954F15bB88257CC10191';
+        const escrowContractAddress = '0x81f234777EB44BD312bd4F6c9AF1821405f1fEaE';
+        const helperContractAddress = '0x8A1C5506269C495D8e736DBd5Db97FB7514365cD';
+        const chainID = 11155111;
+
+        const escrowAbi = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum MoneyStatus",
+                        "name": "decision",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "ArbitrationDecided",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "initiator",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ArbitrationInitiated",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ArbitratorAdded",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ArbitratorApplied",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ArbitratorRejected",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ArbitratorRemovedForMalfeasance",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    }
+                ],
+                "name": "ArbitratorRemovedForTardiness",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "recipient",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountInWei",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "EscrowReleased",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address[]",
+                        "name": "juryPool",
+                        "type": "address[]"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "enum JuryVote",
+                        "name": "juryVote",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "JuryDecided",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "address[]",
+                        "name": "juryPool",
+                        "type": "address[]"
+                    }
+                ],
+                "name": "JurySelected",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "voter",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint8",
+                        "name": "vote",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "VoteSubmitted",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "Helpers",
+                "outputs": [
+                    {
+                        "internalType": "contract EscrowHelpersInterface",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "RANDOM_NUMBER_RETAILER",
+                "outputs": [
+                    {
+                        "internalType": "contract RandomNumberRetailerInterface",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    }
+                ],
+                "name": "approveTransaction",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "arbitratorAddresses",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "arbitratorApplicantsAddresses",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "enum JuryVote",
+                        "name": "wasPreviousArbitrationValid",
+                        "type": "uint8"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "castVoteAsJuror",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "applicantAddress",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "bool",
+                        "name": "approveApplication",
+                        "type": "bool"
+                    }
+                ],
+                "name": "decideOnArbitratorApplication",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    }
+                ],
+                "name": "getJurorsForTransactionId",
+                "outputs": [
+                    {
+                        "internalType": "address[]",
+                        "name": "jurorsForSpecifiedTransaction",
+                        "type": "address[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    }
+                ],
+                "name": "getJuryVotesForTransactionId",
+                "outputs": [
+                    {
+                        "internalType": "enum JuryVote[]",
+                        "name": "juryVotesForSpecifiedTransaction",
+                        "type": "uint8[]"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "invokeJuryTrial",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "name": "isArbitrator",
+                "outputs": [
+                    {
+                        "internalType": "enum ArbitratorStatus",
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "isPaused",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "jurorToContestedTransactionIdArrayMap",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "localVariables",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "basisPointsForSender",
+                        "type": "uint16"
+                    }
+                ],
+                "name": "makeArbitrationDecision",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "receiverAddressToTransactionIdArrayMap",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    }
+                ],
+                "name": "rejectTransaction",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "requestArbitration",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "chosenArbitrator",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "requestNewArbitratorForTardiness",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "chosenArbitrator",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailerInterface.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "requestNewJuryForTardiness",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    }
+                ],
+                "name": "requestPayoutAfterArbitrationGracePeriodEnds",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "senderAddressToTransactionArrayMap",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "sender",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "receiver",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "amountInWei",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "senderVote",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint8",
+                        "name": "receiverVote",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "enum MoneyStatus",
+                        "name": "moneyStatus",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "enum ArbitrationStatus",
+                        "name": "arbitrationStatus",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint16",
+                        "name": "senderCutInBps",
+                        "type": "uint16"
+                    },
+                    {
+                        "internalType": "address",
+                        "name": "arbitrator",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "arbitrationStartBlock",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "arbitrationEndBlock",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "enum TrialStatus",
+                        "name": "trialStatus",
+                        "type": "uint8"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "trialStartBlock",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "_isPaused",
+                        "type": "bool"
+                    }
+                ],
+                "name": "setIsPaused",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_minimumTransactionValueInWei",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setMinimumTransactionValueInWei",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "signUpAsArbitrator",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "receiver",
+                        "type": "address"
+                    }
+                ],
+                "name": "startTransaction",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "weiToWithdraw",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawCreatorEarnings",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        const rnrAbi = [
+            {
+                "inputs": [],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "blockNum",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "BlockhashNotInStore",
+                "type": "error"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferRequested",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "from",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "OwnershipTransferred",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "uint256",
+                        "name": "requestId",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "outputSeed",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint96",
+                        "name": "payment",
+                        "type": "uint96"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "bool",
+                        "name": "success",
+                        "type": "bool"
+                    }
+                ],
+                "name": "RandomWordsFulfilled",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {
+                        "indexed": true,
+                        "internalType": "address",
+                        "name": "requestor",
+                        "type": "address"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "weiPaid",
+                        "type": "uint256"
+                    },
+                    {
+                        "indexed": false,
+                        "internalType": "uint256",
+                        "name": "amountOfRandomNumbersReturned",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "RandomWordsReturnedSync",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "BLOCKHASH_STORE",
+                "outputs": [
+                    {
+                        "internalType": "contract BlockhashStoreInterface",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "acceptOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "contractIsPaused",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct VRF.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailer.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "fulfillRandomWords",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256[2]",
+                        "name": "publicKey",
+                        "type": "uint256[2]"
+                    }
+                ],
+                "name": "hashOfKey",
+                "outputs": [
+                    {
+                        "internalType": "bytes32",
+                        "name": "",
+                        "type": "bytes32"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "minimumHealthyLengthOfRandomNumbersArray",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "minimumViablePriceOfARandomNumberInWei",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "mostRecentRequestId",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "shouldBePaused",
+                        "type": "bool"
+                    }
+                ],
+                "name": "pauseOrUnpauseContract",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "priceMultiplier",
+                "outputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "priceOfARandomNumberInWei",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "randomNumbersAvailable",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amountOfRandomNumbersAvailable",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "replacementContractAddress",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amountOfRandomNumbersToRequest",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256[]",
+                        "name": "randomSeedArray",
+                        "type": "uint256[]"
+                    }
+                ],
+                "name": "requestRandomNumbersSynchronous",
+                "outputs": [
+                    {
+                        "internalType": "uint256[]",
+                        "name": "randomNumbersToReturn",
+                        "type": "uint256[]"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "amountOfRandomNumbersToRequest",
+                        "type": "uint256"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "pk",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "gamma",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "c",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "s",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "seed",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "uWitness",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "cGammaWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256[2]",
+                                "name": "sHashWitness",
+                                "type": "uint256[2]"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "zInv",
+                                "type": "uint256"
+                            }
+                        ],
+                        "internalType": "struct VRF.Proof",
+                        "name": "proof",
+                        "type": "tuple"
+                    },
+                    {
+                        "components": [
+                            {
+                                "internalType": "uint64",
+                                "name": "blockNum",
+                                "type": "uint64"
+                            },
+                            {
+                                "internalType": "uint256",
+                                "name": "subId",
+                                "type": "uint256"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "callbackGasLimit",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "uint32",
+                                "name": "numWords",
+                                "type": "uint32"
+                            },
+                            {
+                                "internalType": "address",
+                                "name": "sender",
+                                "type": "address"
+                            },
+                            {
+                                "internalType": "bytes",
+                                "name": "extraArgs",
+                                "type": "bytes"
+                            }
+                        ],
+                        "internalType": "struct RandomNumberRetailer.RequestCommitment",
+                        "name": "rc",
+                        "type": "tuple"
+                    }
+                ],
+                "name": "requestRandomNumbersSynchronousUsingVRFv2Seed",
+                "outputs": [
+                    {
+                        "internalType": "uint256[]",
+                        "name": "randomNumbersToReturn",
+                        "type": "uint256[]"
+                    }
+                ],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_amountOfGasUsedForAFulfillRandomNumbersTransaction",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setAmountOfGasUsedForAFulfillRandomNumbersTransaction",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_maximumCostOfSendInWei",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setMaximumCostOfSendInWei",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint32",
+                        "name": "_maximumNumbersThatCanBeFulfilledInOneTransaction",
+                        "type": "uint32"
+                    }
+                ],
+                "name": "setMaximumNumbersThatCanBeFulfilledInOneTransaction",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_minimumHealthyLengthOfRandomNumbersArray",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setMinimumHealthyLengthOfRandomNumbersArray",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_minimumServerBalanceInWei",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setMinimumServerBalanceInWei",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "_minimumViablePriceOfARandomNumberInWei",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setMinimumViablePriceOfARandomNumberInWei",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "_priceMultiplier",
+                        "type": "uint8"
+                    }
+                ],
+                "name": "setPriceMultiplier",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "_replacementContractAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "setReplacementContractAddress",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "to",
+                        "type": "address"
+                    }
+                ],
+                "name": "transferOwnership",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "weiToWithdraw",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "withdrawETHToOwner",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        const helperAbi = [
+            {
+                "inputs": [],
+                "name": "RNR_ESCROW",
+                "outputs": [
+                    {
+                        "internalType": "contract RNREscrowInterface",
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "x",
+                        "type": "address"
+                    }
+                ],
+                "name": "addressToAsciiString",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes1",
+                        "name": "b",
+                        "type": "bytes1"
+                    }
+                ],
+                "name": "char",
+                "outputs": [
+                    {
+                        "internalType": "bytes1",
+                        "name": "c",
+                        "type": "bytes1"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "bytes1",
+                        "name": "_char",
+                        "type": "bytes1"
+                    }
+                ],
+                "name": "hexcharToByte",
+                "outputs": [
+                    {
+                        "internalType": "uint8",
+                        "name": "",
+                        "type": "uint8"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "arbitratorToCheck",
+                        "type": "address"
+                    },
+                    {
+                        "internalType": "address[]",
+                        "name": "arbitratorAddressArray",
+                        "type": "address[]"
+                    }
+                ],
+                "name": "isArbitratorAddressInArray",
+                "outputs": [
+                    {
+                        "internalType": "bool",
+                        "name": "",
+                        "type": "bool"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "address",
+                        "name": "RNREscrowInterfaceAddress",
+                        "type": "address"
+                    }
+                ],
+                "name": "setUpEscrowInterface",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "str",
+                        "type": "string"
+                    }
+                ],
+                "name": "stringToAddress",
+                "outputs": [
+                    {
+                        "internalType": "address",
+                        "name": "addr",
+                        "type": "address"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "numString",
+                        "type": "string"
+                    }
+                ],
+                "name": "stringToUint",
+                "outputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "val",
+                        "type": "uint256"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "transactionId",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "string",
+                        "name": "evidenceURL",
+                        "type": "string"
+                    }
+                ],
+                "name": "submitEvidence",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "str",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "startIndex",
+                        "type": "uint256"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "endIndex",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "substring",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "substr",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "uint256",
+                        "name": "value",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "toString",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "pure",
+                "type": "function"
+            },
+            {
+                "inputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    },
+                    {
+                        "internalType": "uint256",
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "transactionIDToEvidenceMap",
+                "outputs": [
+                    {
+                        "internalType": "string",
+                        "name": "",
+                        "type": "string"
+                    }
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            }
+        ];
+
+        async function metamaskAccountsExist(){
+            if (window.ethereum){
+                const accounts = await window.ethereum.request({method: 'eth_accounts'}); 
+
+                if (accounts.length) {
+                    return true;
+                } 
+                else {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+
+        async function switchNetwork(chainId){
+            const currentChainId = await web3.eth.getChainId();
+            
+            if (currentChainId != chainId){
+                try {
+                    await ethereum.request({
+                        method:'wallet_switchEthereumChain',
+                        params: [{chainId: Web3.utils.toHex(chainId)}]
+                    });
+                    console.log(`switched to chainid : ${chainId} succesfully`);
+                    return true;
+                }catch(err){
+                    console.log(`error occured while switching chain to chainId ${chainId}, err: ${err.message} code: ${err.code}`);
+                    return false;
+                }
+            }
+            else{
+                return true;
+            }
+        }
+
+        async function getUserRole(blockchainAddress){
+            const isArbitrator = await window.escrowContract.methods.isArbitrator(blockchainAddress).call();
+
+            if (isArbitrator){
+                return "Arbitrator";
+            }
+            else{
+                return "Trader";
+            }
+        }
+
+        const senderVoteMap = {
+            0: "NO_VOTE_SUBMITTED",
+            1: "APPROVED_TRANSACTION",
+            2: "REJECTED_TRANSACTION"
+        };
+
+        const receiverVoteMap = senderVoteMap;
+
+        const moneyStatusMap = {
+            0: "MONEY_IN_ESCROW",
+            1: "MONEY_RELEASED_TO_RECEIVER",
+            2: "MONEY_RETURNED_TO_SENDER",
+            3: "MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER"
+        };
+
+        const arbitrationStatusMap = {
+            0: "NOT_IN_ARBITRATION",
+            1: "IN_ARBITRATION",
+            2: "ARBITRATION_COMPLETE"
+        };
+
+        const trialStatusMap = {
+            0: "TRIAL_HAS_NOT_BEEN_INVOKED",
+            1: "TRIAL_ONGOING",
+            2: "TRIAL_DECIDED"
+        }
+
+        async function displayTransactionInformation(){
+            const transactionSelectorElement = document.getElementById('transactionSelector');
+
+            const transactionId = transactionSelectorElement.value;
+
+            if (!transactionId){
+                return;
+            }
+
+            const senderBlockchainAddress = transactionId.slice(0, 42);
+        
+            const transactionIndex = Number(transactionId.slice(43));
+
+            const transactionStruct = await window.escrowContract.methods.senderAddressToTransactionArrayMap(senderBlockchainAddress, transactionIndex).call();
+
+            // get values from transactionStruct
+
+            const transactionSender = transactionStruct['sender'];
+
+            const transactionReceiver = transactionStruct['receiver']
+
+            const amountInEth = Web3.utils.fromWei(transactionStruct['amountInWei'], 'ether');
+
+            const senderVote = senderVoteMap[Number(transactionStruct['senderVote'])];
+
+            const receiverVote = receiverVoteMap[Number(transactionStruct['receiverVote'])];
+
+            const moneyStatus = moneyStatusMap[Number(transactionStruct['moneyStatus'])];
+
+            const arbitrationStatus = arbitrationStatusMap[Number(transactionStruct['arbitrationStatus'])];
+
+            const senderCutPercentage = Number(transactionStruct['senderCutInBps']) / 100;
+
+            const latestBlockNumber = Number(await web3.eth.getBlockNumber());
+
+            const arbitrationStartBlock = Number(transactionStruct['arbitrationStartBlock']);
+
+            let arbitrationDeadlineBlock = arbitrationStartBlock + 50134;
+
+            const arbitrationGracePeriodEndBlock = Number(transactionStruct['arbitrationEndBlock']) + 50134;
+
+            const trialStatus = trialStatusMap[Number(transactionStruct['trialStatus'])];
+
+            const trialStartBlock = Number(transactionStruct['trialStartBlock']);
+
+            let trialDeadlineBlock = trialStartBlock + 50134;
+
+            const tardySuffix = '<span style="color: red; font-weight: bold;">(TARDY!)</span>';
+
+            let arbitrationTardy = false;
+            let juryTardy = false;
+
+            if (arbitrationDeadlineBlock < latestBlockNumber){
+                arbitrationDeadlineBlock = `${arbitrationDeadlineBlock} ${tardySuffix}`;
+                arbitrationTardy = true;
+            }
+
+            if (trialDeadlineBlock < latestBlockNumber){
+                trialDeadlineBlock = `${trialDeadlineBlock} ${tardySuffix}`;
+                juryTardy = true;
+            }
+
+            const metamaskSender = window.ethereumAddresses[0];
+
+            let arbitrationEvidenceURL;
+
+            const lowerMetamaskSender = metamaskSender.toLowerCase();
+
+            if (transactionSender.toLowerCase() === lowerMetamaskSender){
+                arbitrationEvidenceURL = (await fetchEvidenceForArbitration(transactionId))[0];
+            }
+            else if(transactionReceiver.toLowerCase() === lowerMetamaskSender){
+                arbitrationEvidenceURL = (await fetchEvidenceForArbitration(transactionId))[1];
+            }
+
+            // output transaction information
+
+            let html = `
+                <b>Transaction ID:</b> <span id="transactionId">${transactionId}</span><br><br>
+                <b>Sender:</b> ${transactionSender}<br>
+                <b>Receiver:</b> ${transactionReceiver}<br><br>
+                <b>Transaction Amount:</b> <span id="transactionAmount">${amountInEth}</span> ETH<br><br>
+                <b>Sender Vote:</b> ${senderVote}<br>
+                <b>Receiver Vote:</b> ${receiverVote}<br><br>
+                <b>Money Status:</b> ${moneyStatus}<br><br>
+                <b>Current Block:</b> ${latestBlockNumber}<br><br>
+                <b>Arbitration Status:</b> ${arbitrationStatus}<br>
+                <b>Your Arbitration Evidence:</b> <span id="evidence">${arbitrationEvidenceURL}</span><br><br>
+            `;
+
+            let buttonsHtml = "";
+
+            if (arbitrationStatus === "NOT_IN_ARBITRATION"){
+                buttonsHtml = buttonsHtml.concat(`
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <div style="margin-top:15px;">
+                            <button onclick="approveTransaction()" type="button" id="approveTransactionButton" name="approveTransactionButton" class="btn btn-primary">Approve Transaction</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <div style="margin-top:15px;">
+                            <button onclick="rejectTransaction()" type="button" id="rejectTransactionButton" name="rejectTransactionButton" class="btn btn-primary">Reject Transaction</button>
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-bottom:15px;">
+                        <div style="margin-top:15px;">
+                            <button onclick="requestArbitration()" type="button" id="requestArbitrationButton" name="requestArbitrationButton" class="btn btn-primary">Request Arbitration</button>
+                        </div>
+                    </div>
+                `);
+            }
+            else{
+                html = html.concat(`
+                    <b>Arbitration started block:</b> ${arbitrationStartBlock}<br>
+                    <b>Arbitration deadline block:</b> ${arbitrationDeadlineBlock}<br>
+                `);
+
+                if(arbitrationTardy){
+                    buttonsHtml = buttonsHtml.concat(`
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div style="margin-top:15px;">
+                                <button onclick="requestNewArbitratorForTardiness()" type="button" id="requestNewArbitratorForTardinessButton" name="requestNewArbitratorForTardinessButton" class="btn btn-primary">Request New Arbitrator For Tardiness</button>
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+
+            if (arbitrationStatus === "ARBITRATION_COMPLETE"){
+                html = html.concat(`<b>Percentage marked for sender by arbitrator:</b> ${senderCutPercentage}<br>`);
+
+                if(trialStatus === "TRIAL_HAS_NOT_BEEN_INVOKED"){
+                    if (arbitrationGracePeriodEndBlock < latestBlockNumber){
+                        html = html.concat(`
+                            <b>Arbitration grace period end block:</b> ${arbitrationGracePeriodEndBlock} <span style="color: red; font-weight: bold;">(GRACE PERIOD ENDED!)</span><br>
+                        `);
+
+                        buttonsHtml = buttonsHtml.concat(`
+                            <div class="form-group" style="margin-bottom:15px;">
+                                <div style="margin-top:15px;">
+                                    <button onclick="requestPayoutAfterArbitrationGracePeriodEnds()" type="button" id="requestPayoutAfterArbitrationGracePeriodEndsButton" name="requestPayoutAfterArbitrationGracePeriodEndsButton" class="btn btn-primary">Request Payout After Arbitration Grace Period Ends</button>
+                                </div>
+                            </div>
+                        `);
+                    }
+                    else{
+                        html = html.concat(`
+                            <b>Arbitration grace period end block:</b> ${arbitrationGracePeriodEndBlock}<br>
+                        `);
+
+                        buttonsHtml = buttonsHtml.concat(`
+                            <div class="form-group" style="margin-bottom:15px;">
+                                <div style="margin-top:15px;">
+                                    <button onclick="invokeJuryTrial()" type="button" id="invokeJuryTrialButton" name="invokeJuryTrialButton" class="btn btn-primary">Invoke Jury Trial</button>
+                                </div>
+                            </div>
+                        `);
+                    }
+                }                
+            }
+
+
+            if (trialStatus != "TRIAL_HAS_NOT_BEEN_INVOKED"){
+                html = html.concat(`
+                    <br><b>Jury trial started block:</b> ${trialStartBlock}<br>
+                    <b>Jury trial deadline block:</b> ${trialDeadlineBlock}
+                `);
+
+                if (trialStatus === 'TRIAL_ONGOING' && juryTardy){
+                    buttonsHtml = buttonsHtml.concat(`
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div style="margin-top:15px;">
+                                <button onclick="requestNewJuryForTardiness()" type="button" id="requestNewJuryForTardinessButton" name="requestNewJuryForTardinessButton" class="btn btn-primary">Request New Jury For Tardiness</button>
+                            </div>
+                        </div>
+                    `);
+                }
+            }
+
+            if (!Boolean(arbitrationEvidenceURL)){
+                buttonsHtml = buttonsHtml.concat(`
+                        <div class="form-group" style="margin-bottom:15px;">
+                            <div style="margin-top:15px;">
+                                <button onclick="submitEvidenceForArbitration()" type="button" id="submitEvidenceForArbitrationButton" name="submitEvidenceForArbitrationButton" class="btn btn-primary">Submit Evidence For Arbitration</button>
+                            </div>
+                        </div>
+                `)
+            }
+
+            const transactionInformationElement = document.getElementById('transactionInformation');
+
+            transactionInformationElement.innerHTML = html;
+
+            // output buttons
+
+            const manageTransactionsButtonsElement = document.getElementById('manageTransactionsButtons');
+            
+            manageTransactionsButtonsElement.innerHTML = buttonsHtml;
+        }
+
+        async function displayTransactionInformationForArbitration(){
+            const transactionSelectorForArbitrationElement = document.getElementById('transactionSelectorForArbitration');
+
+            const transactionId = transactionSelectorForArbitrationElement.value;
+
+            if (!transactionId){
+                return;
+            }
+
+            const senderBlockchainAddress = transactionId.slice(0, 42);
+        
+            const transactionIndex = Number(transactionId.slice(43));
+
+            const transactionStruct = await window.escrowContract.methods.senderAddressToTransactionArrayMap(senderBlockchainAddress, transactionIndex).call();
+
+            // get values from transactionStruct
+
+            const transactionSender = transactionStruct['sender'];
+
+            const transactionReceiver = transactionStruct['receiver']
+
+            const amountInEth = Web3.utils.fromWei(transactionStruct['amountInWei'], 'ether');
+
+            const senderVote = senderVoteMap[Number(transactionStruct['senderVote'])];
+
+            const receiverVote = receiverVoteMap[Number(transactionStruct['receiverVote'])];
+
+            const latestBlockNumber = Number(await web3.eth.getBlockNumber());
+
+            const arbitrationStartBlock = Number(transactionStruct['arbitrationStartBlock']);
+
+            let arbitrationDeadlineBlock = arbitrationStartBlock + 50134;
+
+            const tardySuffix = '<span style="color: red; font-weight: bold;">(TARDY!)</span>';
+
+            if (arbitrationDeadlineBlock < latestBlockNumber){
+                arbitrationDeadlineBlock = `${arbitrationDeadlineBlock} ${tardySuffix}`;
+            }
+
+            const evidenceURLs = await fetchEvidenceForArbitration(transactionId);
+
+            const senderEvidence = evidenceURLs[0];
+            const recieverEvidence = evidenceURLs[1];
+
+            let html = `
+                <b>Transaction ID:</b> <span id="transactionIdForArbitration">${transactionId}</span><br><br>
+                <b>Sender:</b> ${transactionSender}<br>
+                <b>Receiver:</b> ${transactionReceiver}<br><br>
+                <b>Transaction Amount:</b> <span id="transactionAmount">${amountInEth}</span> ETH<br><br>
+                <b>Sender Vote:</b> ${senderVote}<br>
+                <b>Receiver Vote:</b> ${receiverVote}<br><br>
+                <b>Current Block:</b> ${latestBlockNumber}<br><br>
+                <b>Arbitration started block:</b> ${arbitrationStartBlock}<br>
+                <b>Arbitration deadline block:</b> ${arbitrationDeadlineBlock}<br><br>
+                <b>Sender Evidence:</b> ${senderEvidence}<br>
+                <b>Reciever Evidence:</b> ${recieverEvidence}<br>
+            `;
+
+            const transactionInformationForArbitrationElement = document.getElementById('transactionInformationForArbitration');
+
+            transactionInformationForArbitrationElement.innerHTML = html;
+
+        }
+
+        async function getAssociatedTransactions(blockchainAddress){
+            if (window.associatedTransactionsAlreadySet){
+                console.log('we already got active associated transactions');
+                return;
+            }
+
+            const transactionSelectorElement = document.getElementById('transactionSelector');
+
+            let index = 0;
+
+            // get transactions where current user is sender
+
+            while (true){
+                let transactionStruct;
+
+                try{
+                    transactionStruct = await window.escrowContract.methods.senderAddressToTransactionArrayMap(blockchainAddress, index).call();
+
+                    const moneyStatus = Number(transactionStruct['moneyStatus']);
+
+                    if (moneyStatus === 0){
+                        const transactionId = `${blockchainAddress}-${index}`;
+
+                        const option = document.createElement("option");
+
+                        option.text = `${transactionId} (sender)`;
+                        option.value = transactionId;
+
+                        transactionSelectorElement.appendChild(option);
+                    }
+                } catch (error){
+                    break;
+                }
+
+                index++;
+            }
+
+            index = 0;
+
+            // get transactions where current user is reciever
+
+            while (true){
+                let transactionId;
+
+                try{
+                    const transactionId = await window.escrowContract.methods.receiverAddressToTransactionIdArrayMap(blockchainAddress, index).call();
+
+                    const senderBlockchainAddress = transactionId.slice(0, 40);
+                    const transactionIndex = Number(transactionId.slice(41));
+
+                    const transactionStruct = await window.escrowContract.methods.senderAddressToTransactionArrayMap(senderBlockchainAddress, transactionIndex).call();
+
+                    const moneyStatus = Number(transactionStruct['moneyStatus']);
+
+                    const zeroExTransactionId = `0x${transactionId}`;
+
+                    if (moneyStatus === 0){
+                        const option = document.createElement("option");
+
+                        option.text = `${zeroExTransactionId} (receiver)`;
+                        option.value = zeroExTransactionId;
+
+                        transactionSelectorElement.appendChild(option);
+                    }
+                } catch (error){
+                    break;
+                }
+
+                index++;
+            }
+
+            window.associatedTransactionsAlreadySet = true;
+
+            const changeEvent = new Event('change');
+
+            transactionSelectorElement.dispatchEvent(changeEvent);
+        }
+
+        async function getActiveJuryTrialsForArbitrator(blockchainAddress){
+            let index = 0;
+            const contestedTransactionIds = [];
+            const juryTrialSelectorElement = document.getElementById('juryTrialSelector');
+
+            if (window.activeJuryTrialsAlreadySet){
+                console.log('we already got active jury trials');
+                return;
+            }
+
+            console.log('getting active jury trials');
+
+            while (true){
+                let contestedTransactionId;
+
+                try{
+                    contestedTransactionId = await window.escrowContract.methods.jurorToContestedTransactionIdArrayMap(blockchainAddress, index).call();
+                } catch (error){
+                    break;
+                }
+
+                contestedTransactionIds.push(contestedTransactionId);
+                index++;
+            }
+
+            const contestedTransactionIdsLength = contestedTransactionIds.length;
+
+            for (let i=0; i < contestedTransactionIdsLength; i++){
+                const contestedTransactionId = contestedTransactionIds[i];
+                const juryPool = await window.escrowContract.methods.getJurorsForTransactionId(contestedTransactionId).call();
+                const juryPoolLength = juryPool.length;
+
+                for (let j=0; j < juryPoolLength; j++){
+                    const jurorAddress = juryPool[j];
+
+                    if (jurorAddress.toLowerCase() === blockchainAddress){
+
+                        const juryVotes = await window.escrowContract.methods.getJuryVotesForTransactionId(contestedTransactionId).call();
+
+                        const currentUserVote = Number(juryVotes[j]);
+
+                        if (currentUserVote === 0){
+                            const option = document.createElement("option");
+
+                            option.text = contestedTransactionId;
+                            option.value = contestedTransactionId;
+
+                            juryTrialSelectorElement.appendChild(option);
+
+                            break;
+                        }
+                    }
+                }
+            }
+
+            window.activeJuryTrialsAlreadySet = true;
+        }
+
+        async function getRandomNumberFromWASM(metamaskSender, randomSeedArrayLength, latestBlockNumber) {
+            try {
+                const block = await web3.eth.getBlock(latestBlockNumber);
+                const blockHash = block.hash;
+                const password = 'FJFJDJ37837373@#@#@#@#';
+                const subID = 9715;
+                const cbsGasLimit = 1000000;
+                const numWorkers = 1;
+                console.log('About to create a go object')
+                const go = new Go();
+                console.log('Successfully created a go object')
+                const wasmModule = await WebAssembly.instantiateStreaming(fetch("main.wasm"), go.importObject);
+                console.log('Successfully instantiated wasm')
+                go.run(wasmModule.instance);
+                console.log('Successfully ran module instance')
+
+                const result = generate(
+                            1,
+                            password,
+                            metamaskSender,
+                            subID,
+                            blockHash,
+                            latestBlockNumber,
+                            cbsGasLimit,
+                            randomSeedArrayLength,
+                            numWorkers);
+                            
+                const start = result.lastIndexOf('[[');
+                const end = result.lastIndexOf(']]');
+
+                if (start === -1 || end === -1) {
+                    throw new Error("Invalid JSON format in text");
+                }
+
+                const JSONString = result.substring(start, end + 2);
+                return JSON.parse(JSONString)[0];
+            } catch (err) {
+                console.error("Failed to load WASM module or process result:", err);
+                throw err;
+            }
+        }   
+
+        function pullIntFromSecp256k1Part(part){
+            const closingBracketIndex = part.indexOf('}');
+            const hexString = '0x' + part.substring(0, closingBracketIndex);
+            
+            return web3.utils.hexToNumber(
+                hexString
+            );
+        }
+        
+        function convertSecp256k1To2TupleOfInts(secpString){
+            const parts = secpString.split('{');
+            
+            return [
+                pullIntFromSecp256k1Part(parts[2]),
+                pullIntFromSecp256k1Part(parts[3])
+            ];
+        }        
+
+        async function requestRandomNumbersSynchronousUsingVRFv2Seed(){
+            let randomSeedArrayLength = 5;
+            
+            randomSeedArrayLength = Number(randomSeedArrayLength);
+        
+            const latestBlockNumber = await web3.eth.getBlockNumber();
+            const latestBlockNumberStr = latestBlockNumber.toString();
+            
+            const metamaskSender = window.ethereumAddresses[0];
+            
+            const proofAndRequestCommitment = await getRandomNumberFromWASM(metamaskSender, randomSeedArrayLength, latestBlockNumberStr);
+            
+            // -------------------------------------------------------------------------------------
+                        
+            const pk = convertSecp256k1To2TupleOfInts(proofAndRequestCommitment[10]);
+            const gamma = convertSecp256k1To2TupleOfInts(proofAndRequestCommitment[11]);
+            const c = web3.utils.toBigInt(proofAndRequestCommitment[12]);
+            const s = web3.utils.toBigInt(proofAndRequestCommitment[13]);
+            const seed = proofAndRequestCommitment[4];
+            const uWitness = proofAndRequestCommitment[16];
+            const cGammaWitness = convertSecp256k1To2TupleOfInts(proofAndRequestCommitment[17]);
+            const sHashWitness = convertSecp256k1To2TupleOfInts(proofAndRequestCommitment[18]);
+            const zInv = web3.utils.toBigInt(proofAndRequestCommitment[19]);
+            
+            const blockNum = web3.utils.toBigInt(proofAndRequestCommitment[6]);
+            const subId = web3.utils.toBigInt(proofAndRequestCommitment[2]);
+            const callbackGasLimit = web3.utils.toBigInt(proofAndRequestCommitment[7]);
+            const numWords = web3.utils.toBigInt(proofAndRequestCommitment[8]);
+            const sender = proofAndRequestCommitment[1];
+            
+            const debugDict = {
+                pk: pk,
+                gamma: gamma,
+                c: c,
+                s: s,
+                seed: seed,
+                uWitness: uWitness,
+                cGammaWitness: cGammaWitness,
+                sHashWitness: sHashWitness,
+                zInv: zInv,
+                blockNum: blockNum,
+                subId: subId,
+                callbackGasLimit: callbackGasLimit,
+                numWords: numWords,
+                sender: sender
+            }
+            
+            console.log(debugDict);
+            
+            const proof = [
+                pk,
+                gamma,
+                c,
+                s,
+                seed,
+                uWitness,
+                cGammaWitness,
+                sHashWitness,
+                zInv,
+            ];
+
+            const requestCommitment = [
+                blockNum,
+                subId,
+                callbackGasLimit,
+                numWords,
+                sender,
+                '0x',
+            ];
+            
+            return [proof, requestCommitment];
+        }
+
+        async function castVoteAsJuror(juryVote){
+            const castVoteAsJurorInProgressGifElement = document.getElementById('castVoteAsJurorInProgressGif');
+
+            castVoteAsJurorInProgressGifElement.style.display = '';
+
+            const juryTrialSelectorElement = document.getElementById('juryTrialSelector');
+
+            const transactionId = juryTrialSelectorElement.value;
+            
+            if (!transactionId){
+                return;
+            }
+
+            const option = juryTrialSelectorElement.options[juryTrialSelectorElement.selectedIndex];
+
+            const priceOfARandomNumberInWei = await window.rnrContract.methods.priceOfARandomNumberInWei().call();
+            const weiToPay = priceOfARandomNumberInWei;
+            
+            const [proof, requestCommitment] = await requestRandomNumbersSynchronousUsingVRFv2Seed();
+            
+            const metamaskSender = window.ethereumAddresses[0];
+
+            castVoteAsJurorInProgressGifElement.style.display = 'none';
+            
+            window.escrowContract.methods.castVoteAsJuror(transactionId, juryVote, proof, requestCommitment).send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('castVoteAsJuror successful!');
+                    juryTrialSelectorElement.removeChild(option);
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('castVoteAsJuror failed. Please try again.');
+            });
+
+            option.text = `${transactionId} (vote already attempted)`;
+        }
+
+        async function setUserBlockchainAddress(blockchainAddress){
+            const userRole = await getUserRole(blockchainAddress);
+
+            if (userRole === "Arbitrator"){
+                document.getElementById('applyToBeAnArbitratorView').innerHTML = 'You are already an arbitrator.';
+            }
+
+            // hide connect wallet buttons
+
+            const connectWalletButtonHolderElements = document.getElementsByClassName('connectButtonHolder');
+
+            for (let i = 0; i < connectWalletButtonHolderElements.length; i++) {
+                const element = connectWalletButtonHolderElements[i];
+                element.style.display = 'none';
+            }
+
+            // set blockchain address in elements 
+
+            const blockchainAddressElements = document.getElementsByClassName('blockchainAddress');
+
+            for (let i = 0; i < blockchainAddressElements.length; i++) {
+                const element = blockchainAddressElements[i];
+                element.innerHTML = window.ethereumAddresses[0];
+            }
+
+            // set user role
+
+            const roleElements = document.getElementsByClassName('role');
+
+            for (let i = 0; i < roleElements.length; i++) {
+                const element = roleElements[i];
+                element.innerHTML = userRole;
+            }
+
+            // show user blockchain address and role
+            const blockchainAddressHolderElements = document.getElementsByClassName('blockchainAddressHolder');
+
+            for (let i = 0; i < blockchainAddressHolderElements.length; i++) {
+                const element = blockchainAddressHolderElements[i];
+                element.style.display = '';
+            }
+
+            document.getElementById('connectWalletButtonSidebar').style.marginTop = '80px !important';
+
+            getArbitratorApplicationFeeInEth();
+            getAssociatedTransactions(blockchainAddress);
+
+            if (userRole === "Arbitrator"){
+                getActiveJuryTrialsForArbitrator(blockchainAddress);
+                getCurrentArbitratorsForContestedTransactions(blockchainAddress);
+            }
+        }
+
+        async function isConnected() {
+            const doAccountsExist = await metamaskAccountsExist();
+        
+            if (doAccountsExist){
+                console.log('Your wallet is connected.');
+                window.ethereumAddresses = await window.ethereum.request({method: 'eth_requestAccounts'});
+                window.web3 = new Web3(window.ethereum);
+                await switchNetwork(chainID);
+                window.rnrContract = new window.web3.eth.Contract(rnrAbi, rnrContractAddress);
+                window.escrowContract = new window.web3.eth.Contract(escrowAbi, escrowContractAddress);
+                window.helperContract = new window.web3.eth.Contract(helperAbi, helperContractAddress);
+                setUserBlockchainAddress(window.ethereumAddresses[0]);
+            }
+            else {
+                const connectWalletButtonHolderElements = document.getElementsByClassName('connectButtonHolder');
+
+                for (let i = 0; i < connectWalletButtonHolderElements.length; i++) {
+                    const element = connectWalletButtonHolderElements[i];
+                    element.style.display = '';
+                }
+            }
+        }
+
+        async function connectWallet(){
+          if (window.ethereum) {
+            window.ethereumAddresses = await window.ethereum.request({method: 'eth_requestAccounts'});
+            window.web3 = new Web3(window.ethereum);
+            await switchNetwork(chainID);
+            window.rnrContract = new window.web3.eth.Contract(rnrAbi, rnrContractAddress);
+            window.escrowContract = new window.web3.eth.Contract(escrowAbi, escrowContractAddress);
+            setUserBlockchainAddress(window.ethereumAddresses[0]);
+            return true;
+          }
+
+          alert("Please install MetaMask or Rabby to use this website. Thanks!");
+          return false;
+        }
+
+        window.onload = (event) => {
+            isConnected();
+
+            CustomConfirm(
+                {
+                    targets: '#castVoteAsJurorButton', 
+                    title: "Jury Vote", 
+                    body: "Do you approve the arbitrator's decision?", 
+                    btn_yes: "Approve", 
+                    btn_no: "Reject"
+                }, 
+
+                function (confirmed, element){         
+                    const juryTrialSelectorElement = document.getElementById('juryTrialSelector');
+
+                    if (juryTrialSelectorElement.value === ''){
+                        alert('no transaction id selected');
+                        return;
+                    }
+
+                    if (confirmed){
+                        return castVoteAsJuror(1);
+                    }
+                    else{
+                        return castVoteAsJuror(2);
+                    }
+                }
+            );
+        }
+
+        function showSidebar(){
+            document.body.classList.remove('enlarge-menu');
+
+            const sidebar = document.getElementsByClassName('left-sidebar')[0];
+
+            sidebar.style.display = 'unset !important';
+        }
+
+        function hideSidebar(){
+            const sidebar = document.getElementsByClassName('left-sidebar')[0];
+
+            sidebar.style.display = 'none';
+        }
+
+        function getAddress(msg){
+            const address = prompt(msg);
+
+            if (address == null){
+                alert('address not set');
+                return false;
+            }
+
+            if (!web3.utils.isAddress(address)){
+                alert('input address is not valid');
+                return false;
+            }
+            
+            return address;
+        }
+
+        function showView(viewId){
+            const viewElements = document.getElementsByClassName('view');
+
+            for (let i = 0; i < viewElements.length; i++) {
+                const element = viewElements[i];
+                element.style.display = 'none';
+            }
+
+            const activeViewElement = document.getElementById(viewId);
+
+            activeViewElement.style.display = '';
+        }
+
+        function isNum(n){
+            return !isNaN(n);
+        }
+
+        function getWeiValue(msg){
+            let minimumTxValueInEth = prompt(msg);
+            
+            if (minimumTxValueInEth == null){
+                alert('eth value is unset');
+                return false;
+            }
+            
+            minimumTxValueInEth = minimumTxValueInEth.trim();
+            
+            if(!isNum(minimumTxValueInEth)){
+                alert('eth value must be a number');
+                return false;
+            }
+            
+            return Web3.utils.toWei(minimumTxValueInEth, "ether")
+        }
+
+        async function putCurrentArbitratorsForContestedTransactionsIntoDropdown(arbitratorToTransactionsDict, blockchainAddress){
+            const transactionSelectorForArbitrationElement = document.getElementById('transactionSelectorForArbitration');
+
+            if (blockchainAddress in arbitratorToTransactionsDict){
+                const transactions = arbitratorToTransactionsDict[blockchainAddress];
+
+                const numberOfTransactions = transactions.length;
+
+                for (let i=0; i < numberOfTransactions; i++){
+                    const transactionId = transactions[i];
+
+                    const senderBlockchainAddress = transactionId.slice(0, 42);
+                
+                    const transactionIndex = Number(transactionId.slice(43));
+
+                    const transactionStruct = await window.escrowContract.methods.senderAddressToTransactionArrayMap(senderBlockchainAddress, transactionIndex).call();
+
+                    const arbitrationStatus = arbitrationStatusMap[Number(transactionStruct['arbitrationStatus'])];
+
+                    if (arbitrationStatus === 'IN_ARBITRATION'){
+                        const option = document.createElement("option");
+
+                        option.text = transactionId;
+                        option.value = transactionId;
+
+                        transactionSelectorForArbitrationElement.appendChild(option);
+                    }
+                }
+            }
+
+            window.currentTransactionsToArbitrate = true;
+
+            const changeEvent = new Event('change');
+
+            transactionSelectorForArbitrationElement.dispatchEvent(changeEvent);
+        }
+
+        async function getCurrentArbitratorsForContestedTransactions(blockchainAddress){
+            if (!window.currentTransactionsToArbitrate){
+                fetch('https://rnr-cdn.cloud/arbitrators.json', {
+                    method: 'GET',
+                    headers: {
+                        'Accept': 'application/json',
+                    },
+                })
+                .then(response => response.json())
+                .then(response => putCurrentArbitratorsForContestedTransactionsIntoDropdown(response, blockchainAddress));
+            }
+        }
+
+        async function startTransaction(){
+            const receiverAddress = getAddress("Receiver Address:");
+            
+            if (!receiverAddress){
+                return;
+            }
+
+            const metamaskSender = window.ethereumAddresses[0];
+
+            if (receiverAddress.toLowerCase() === metamaskSender.toLowerCase()){
+                alert('You should not create a transaction with yourself.');
+                return;
+            }
+            
+            const minimumTransactionValueInWei = await window.escrowContract.methods.localVariables(1).call();
+            
+            const transactionValueInWei = getWeiValue('What is the transaction value in eth?');
+            
+            if (!transactionValueInWei){
+                return;
+            }
+            
+            if (minimumTransactionValueInWei > transactionValueInWei){
+                const minimumTransactionValueInEth = Web3.utils.fromWei(minimumTransactionValueInWei, 'ether');
+
+                alert(`Transaction value is too low. Minimum transaction value is ${minimumTransactionValueInEth} eth`);
+
+                return;
+            }
+                        
+            const weiToPay = transactionValueInWei;
+                        
+            window.escrowContract.methods.startTransaction(receiverAddress).send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('startTransaction successful!');
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('startTransaction failed. Please try again.');
+            });
+        }
+
+        async function getArbitratorApplicationFeeInEth(){
+            const arbitratorApplicationFeeInWei = await window.escrowContract.methods.localVariables(3).call();
+            const arbitratorApplicationFeeInEth = Web3.utils.fromWei(arbitratorApplicationFeeInWei, 'ether');
+
+            window.arbitratorApplicationFeeInEth = arbitratorApplicationFeeInEth;
+
+            const applicationFeeSpan = document.getElementById('arbitratorApplicationFeeInEth');
+
+            if(applicationFeeSpan){
+                applicationFeeSpan.innerHTML = arbitratorApplicationFeeInEth;
+            }
+        }
+
+        async function signUpAsArbitrator(){
+            const arbitratorApplicationFeeInWei = await window.escrowContract.methods.localVariables(3).call();
+            const weiToPay = arbitratorApplicationFeeInWei;
+            
+            const metamaskSender = window.ethereumAddresses[0];
+
+            window.escrowContract.methods.signUpAsArbitrator().send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('signUpAsArbitrator successful!');
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('signUpAsArbitrator failed. Please try again.');
+            });
+        }
+
+        async function refreshDropdown(){
+            const transactionSelectorElement = document.getElementById('transactionSelector');
+            
+            const changeEvent = new Event('change');
+
+            transactionSelectorElement.dispatchEvent(changeEvent);
+        }
+
+        async function showManageTransactionsGif(){
+            const castVoteAsJurorInProgressGifElement = document.getElementById('manageTransactionInProgressGif');
+
+            castVoteAsJurorInProgressGifElement.style.display = '';
+        }
+
+        async function hideManageTransactionsGif(){
+            const castVoteAsJurorInProgressGifElement = document.getElementById('manageTransactionInProgressGif');
+
+            castVoteAsJurorInProgressGifElement.style.display = 'none';
+        }
+
+        async function approveTransaction(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+            
+            const metamaskSender = window.ethereumAddresses[0];
+            
+            window.escrowContract.methods.approveTransaction(transactionId).send({
+                'from': metamaskSender
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('approveTransaction successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('approveTransaction failed. Please try again.');
+            });
+        }
+
+        async function rejectTransaction(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+            
+            const metamaskSender = window.ethereumAddresses[0];
+            
+            window.escrowContract.methods.rejectTransaction(transactionId).send({
+                'from': metamaskSender
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('rejectTransaction successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('rejectTransaction failed. Please try again.');
+            });
+        }
+
+        function isURL(t){
+            const expression = /[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi;
+            const regex = new RegExp(expression);
+
+            if (t.match(regex)) {
+              return true;
+            } else {
+              return false;
+            }
+        }
+
+        const matchHtmlRegExp = /["'&<>]/;
+
+        function escapeHtml(string) {
+            const str = '' + string;
+            const match = matchHtmlRegExp.exec(str);
+
+            if (!match) {
+                return str;
+            }
+
+            let escape;
+            let html = '';
+            let index = 0;
+            let lastIndex = 0;
+
+            for (index = match.index; index < str.length; index++) {
+                switch (str.charCodeAt(index)) {
+                    case 34: // "
+                        escape = '&quot;'
+                        break
+                    case 38: // &
+                        escape = '&amp;'
+                        break
+                    case 39: // '
+                        escape = '&#39;'
+                        break
+                    case 60: // <
+                        escape = '&lt;'
+                        break
+                    case 62: // >
+                        escape = '&gt;'
+                        break
+                    default:
+                        continue
+                }
+
+                if (lastIndex !== index) {
+                    html += str.substring(lastIndex, index)
+                }
+
+                lastIndex = index + 1
+                html += escape
+          }
+
+          return lastIndex !== index
+            ? html + str.substring(lastIndex, index)
+            : html
+        }
+
+        async function fetchEvidenceForArbitration(transactionId){
+            try{
+                return [
+                    escapeHtml(await window.helperContract.methods.transactionIDToEvidenceMap(transactionId, 0).call()),
+                    escapeHtml(await window.helperContract.methods.transactionIDToEvidenceMap(transactionId, 1).call())
+                ];
+            }
+            catch (error){
+                return ['', ''];
+            }
+        }
+
+        async function submitEvidenceForArbitration(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+
+            const msg = "Please enter the URL that contains your evidence / argument.";
+            const evidenceURL = prompt(msg).trim();
+
+            if(!isURL(evidenceURL)){
+                alert('Evidence URL is invalid. Please submit the evidence with a new URL.');
+                return;
+            }
+
+            const metamaskSender = window.ethereumAddresses[0];
+
+            window.helperContract.methods.submitEvidence(transactionId, evidenceURL).send({
+                'from': metamaskSender
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('submitEvidence successful!');
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('submitEvidence failed. Please try again.');
+            });
+        }
+
+        async function requestArbitration(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+
+            showManageTransactionsGif();
+
+            const priceOfARandomNumberInWei = await window.rnrContract.methods.priceOfARandomNumberInWei().call();
+            const weiToPay = priceOfARandomNumberInWei;
+            
+            const [proof, requestCommitment] = await requestRandomNumbersSynchronousUsingVRFv2Seed();
+            
+            const metamaskSender = window.ethereumAddresses[0];
+            
+            window.escrowContract.methods.requestArbitration(transactionId, proof, requestCommitment).send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('requestArbitration successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('requestArbitration failed. Please try again.');
+            });
+
+            hideManageTransactionsGif();
+
+            const currentEvidence = document.getElementById('evidence').innerHTML;
+
+            if(!Boolean(currentEvidence)){
+                submitEvidenceForArbitration();
+            }
+        }
+
+        async function requestNewArbitratorForTardiness(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+
+            showManageTransactionsGif();
+
+            const priceOfARandomNumberInWei = await window.rnrContract.methods.priceOfARandomNumberInWei().call();
+            const weiToPay = priceOfARandomNumberInWei;
+            
+            const [proof, requestCommitment] = await requestRandomNumbersSynchronousUsingVRFv2Seed();
+            
+            const metamaskSender = window.ethereumAddresses[0];
+
+            console.log();
+            
+            window.escrowContract.methods.requestNewArbitratorForTardiness(transactionId, proof, requestCommitment).send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('requestNewArbitratorForTardiness successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('requestNewArbitratorForTardiness failed. Please try again.');
+            });
+
+            hideManageTransactionsGif();
+        }
+
+        async function requestPayoutAfterArbitrationGracePeriodEnds(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+
+            if (!transactionId){
+                return;
+            }
+            
+            const metamaskSender = window.ethereumAddresses[0];
+
+            window.escrowContract.methods.requestPayoutAfterArbitrationGracePeriodEnds(transactionId).send({
+                'from': metamaskSender,
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('requestPayoutAfterArbitrationGracePeriodEnds successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('requestPayoutAfterArbitrationGracePeriodEnds failed. Please try again.');
+            });
+        }
+
+        async function invokeJuryTrial(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+
+            showManageTransactionsGif();
+
+            const minJuryTrialCostInWei = await window.escrowContract.methods.localVariables(8).call();
+
+            const txAmountInEth = Number(document.getElementById('transactionAmount').innerHTML);
+
+            const txAmountInWei = web3.utils.toBigInt(Web3.utils.toWei(txAmountInEth, "ether"));
+
+            const juryTrialPercentageCost = await window.escrowContract.methods.localVariables(9).call();
+
+            let juryTrialTotalFee = (txAmountInWei * juryTrialPercentageCost) / web3.utils.toBigInt(100);
+
+            if (juryTrialTotalFee < minJuryTrialCostInWei){
+                juryTrialTotalFee = minJuryTrialCostInWei;
+            }
+
+            const priceOfARandomNumberInWei = await window.rnrContract.methods.priceOfARandomNumberInWei().call();
+            const numberOfJurorsInAJury = await window.escrowContract.methods.localVariables(7).call();
+            
+            const weiToPay = juryTrialTotalFee + (priceOfARandomNumberInWei * numberOfJurorsInAJury);
+            
+            const [proof, requestCommitment] = await requestRandomNumbersSynchronousUsingVRFv2Seed();
+            
+            const metamaskSender = window.ethereumAddresses[0];
+            
+            window.escrowContract.methods.invokeJuryTrial(transactionId, proof, requestCommitment).send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('invokeJuryTrial successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('invokeJuryTrial failed. Please try again.');
+            });
+
+            hideManageTransactionsGif();
+        }
+
+        async function requestNewJuryForTardiness(){
+            const transactionId = document.getElementById('transactionId').innerHTML;
+            
+            if (!transactionId){
+                return;
+            }
+
+            showManageTransactionsGif();
+
+            const priceOfARandomNumberInWei = await window.rnrContract.methods.priceOfARandomNumberInWei().call();
+            const numberOfJurorsInAJury = await window.escrowContract.methods.localVariables(7).call();
+            
+            const weiToPay = priceOfARandomNumberInWei * numberOfJurorsInAJury;
+            
+            const [proof, requestCommitment] = await requestRandomNumbersSynchronousUsingVRFv2Seed();
+            
+            const metamaskSender = window.ethereumAddresses[0];
+            
+            window.escrowContract.methods.requestNewJuryForTardiness(transactionId, proof, requestCommitment).send({
+                'from': metamaskSender,
+                'value': weiToPay
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('requestNewJuryForTardiness successful!');
+                    refreshDropdown();
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('requestNewJuryForTardiness failed. Please try again.');
+            });
+
+            hideManageTransactionsGif();
+        }
+
+        function getBasisPoints(msg){
+            let percentagePoints = prompt(msg);
+            
+            if (percentagePoints == null){
+                alert('percentage was not entered');
+                return false;
+            }
+            
+            percentagePoints = percentagePoints.trim();
+            
+            return Math.round(Number(percentagePoints).toPrecision(4) * 100);
+        }
+
+        async function makeArbitrationDecision(){
+            const transactionSelectorForArbitrationElement = document.getElementById('transactionSelectorForArbitration');
+
+            const transactionId = document.getElementById('transactionIdForArbitration').innerHTML;
+
+            if (!transactionId){
+                return;
+            }
+
+            const basisPointsForReceiver = getBasisPoints('What percentage does the receiver get?');
+                  
+            const metamaskSender = window.ethereumAddresses[0];
+
+            const option = transactionSelectorForArbitrationElement.options[transactionSelectorForArbitrationElement.selectedIndex];
+
+            window.escrowContract.methods.makeArbitrationDecision(transactionId, basisPointsForReceiver).send({
+                'from': metamaskSender,
+            })
+            .on('confirmation', function(confirmationNumber, receipt){
+                if (confirmationNumber == 1){
+                    alert('makeArbitrationDecision successful!');
+                    transactionSelectorForArbitrationElement.removeChild(option);
+                }
+            })
+            .on('error', function(error, receipt){
+                alert('makeArbitrationDecision failed. Please try again.');
+            });
+
+            option.text = `${transactionId} (decision already attempted)`;   
+        }
+
+</script>
+
+</body>
+</html>
