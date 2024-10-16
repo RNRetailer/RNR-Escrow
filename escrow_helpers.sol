@@ -1,8 +1,39 @@
-// SPDX-License-Identifier: MIT
+// SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.26;
 
+//import "@openzeppelin/contracts/utils/Create2.sol";
+
+interface RNREscrowInterface {
+    function getTransactionParties(string calldata transactionId) external view returns (address[] memory); 
+}
+
 contract EscrowHelpers {
+    RNREscrowInterface public RNR_ESCROW = RNREscrowInterface(0x0000000000000000000000000000000000000000);
+    address private constant creatorAddress = 0x8Fb9bcdde589059a87eE1056f5bc3F52782d55BB;
+
+    mapping(string => string[]) public transactionIDToEvidenceMap;
+
+    // modifier
+
+    modifier onlyCreator() {
+        require(
+            msg.sender == creatorAddress, 
+            "FAILURE: Only the creator can call this method."
+        );
+
+        _;
+    }
+
     // helper functions
+
+    function setUpEscrowInterface(address RNREscrowInterfaceAddress) external onlyCreator{
+        require(
+            RNR_ESCROW == RNREscrowInterface(0x0000000000000000000000000000000000000000),
+            "Error: RNR_ESCROW can only be set once."
+        );
+
+        RNR_ESCROW = RNREscrowInterface(RNREscrowInterfaceAddress);
+    }
 
     function log10(uint256 value) internal pure returns (uint256) {
         uint256 result = 0;
@@ -61,7 +92,7 @@ contract EscrowHelpers {
         }
     }
 
-    function substring(string memory str, uint256 startIndex, uint256 endIndex) pure external returns (string memory substr) {
+    function substring(string memory str, uint256 startIndex, uint256 endIndex) public pure returns (string memory substr) {
         bytes memory strBytes = bytes(str);
         bytes memory result = new bytes(endIndex - startIndex);
 
@@ -72,7 +103,7 @@ contract EscrowHelpers {
         substr = string(result);
     }
 
-    function stringToUint(string memory numString) external pure returns(uint256 val) {
+    function stringToUint(string memory numString) public pure returns(uint256 val) {
         val = 0;
 
         bytes memory stringBytes = bytes(numString);
@@ -99,7 +130,7 @@ contract EscrowHelpers {
         revert("Invalid hex character");
     }
 
-    function stringToAddress(string memory str) external pure returns (address addr) {
+    function stringToAddress(string memory str) public pure returns (address addr) {
         bytes memory strBytes = bytes(str);
         require(strBytes.length == 42, "Invalid address length");
         bytes memory addrBytes = new bytes(20);
@@ -141,4 +172,57 @@ contract EscrowHelpers {
 
         return false;
     }
+
+    function getInitializedEvidenceArray(string calldata transactionId) private returns (string[] storage evidenceArray){
+        evidenceArray = transactionIDToEvidenceMap[transactionId];
+
+        uint8 evidenceArrayLength = uint8(evidenceArray.length);
+
+        if(evidenceArrayLength == 0){
+            evidenceArray.push('');
+            evidenceArray.push('');
+        }
+    }
+
+    function submitEvidence(string calldata transactionId, string calldata evidenceURL) external{
+        address[] memory transactionParties = RNR_ESCROW.getTransactionParties(transactionId);
+
+        require(
+            (msg.sender == transactionParties[0]) || (msg.sender == transactionParties[1]), 
+            "Error: msg.sender is not the sender or receiver of the transaction. Evidence rejected."
+        );
+
+        uint8 evidenceArrayIndex;
+
+        if(msg.sender == transactionParties[0]){
+            evidenceArrayIndex = 0;
+        }
+        else if(msg.sender == transactionParties[1]){
+            evidenceArrayIndex = 1;
+        }
+
+        string[] storage evidenceArray = getInitializedEvidenceArray(transactionId);
+        bytes memory existingEvidence = bytes(evidenceArray[evidenceArrayIndex]);
+
+        require(
+            existingEvidence.length == 0,
+            "Error: Evidence can only be submitted once for an escrow transaction."
+        );
+
+        evidenceArray[evidenceArrayIndex] = evidenceURL;
+    }
 }
+
+//contract Deployer {
+//   event ContractDeployed(address deployedContractAddress);
+
+//   constructor() {
+//     emit ContractDeployed(
+//       Create2.deploy(
+//            0, 
+//            "Escrow Helper v0.01 Alpha", 
+//            type(EscrowHelpers).creationCode
+//        )
+//      );
+//   }
+//}

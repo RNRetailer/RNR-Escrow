@@ -53,19 +53,6 @@ interface EscrowHelpersInterface {
     function isArbitratorAddressInArray(address arbitratorToCheck, address[] memory arbitratorAddressArray) external pure returns (bool);
 }
 
-enum MoneyStatus {
-    MONEY_IN_ESCROW,
-    MONEY_RELEASED_TO_RECEIVER,
-    MONEY_RETURNED_TO_SENDER,
-    MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER
-}
-
-enum ArbitrationStatus{
-    NOT_IN_ARBITRATION,
-    IN_ARBITRATION,
-    ARBITRATION_COMPLETE
-}
-
 enum ArbitratorStatus{
     NOT_AN_ARBITRATOR,
     VALID_ARBITRATOR,
@@ -90,8 +77,8 @@ struct Transaction{
     uint256 amountInWei;
     uint8 senderVote;
     uint8 receiverVote;
-    MoneyStatus moneyStatus;
-    ArbitrationStatus arbitrationStatus;
+    uint8 moneyStatus;
+    uint8 arbitrationStatus;
     uint16 senderCutInBps;
     address arbitrator;
     uint256 arbitrationStartBlock;
@@ -106,7 +93,7 @@ contract Escrow is ReentrancyGuard{
     event VoteSubmitted(address indexed voter, string transactionId, uint8 vote);
     event EscrowReleased(address indexed recipient, string transactionId, uint256 amountInWei);
     event ArbitrationInitiated(address indexed initiator, string transactionId, address arbitrator);
-    event ArbitrationDecided(address indexed arbitrator, string transactionId, MoneyStatus decision);
+    event ArbitrationDecided(address indexed arbitrator, string transactionId, uint8 decision);
     event ArbitratorAdded(address indexed arbitrator);
     event ArbitratorApplied(address indexed arbitrator);
     event ArbitratorRejected(address indexed arbitrator);
@@ -144,7 +131,7 @@ contract Escrow is ReentrancyGuard{
     RandomNumberRetailerInterface public constant RANDOM_NUMBER_RETAILER = RandomNumberRetailerInterface(0xd058eA7e3DfE100775Ce954F15bB88257CC10191);
 
     // Points to EscrowHelpers contract.
-    EscrowHelpersInterface public constant Helpers = EscrowHelpersInterface(0x7f2C7FB10D365bf2a5f9F7CC9f326Cf9072970Be);
+    EscrowHelpersInterface public constant Helpers = EscrowHelpersInterface(0x813f8E1752f74B4258EBdBB938a8e5e6186f16a1);
 
     uint256[] public localVariables = new uint256[](12);     
     address[] public arbitratorApplicantsAddresses = new address[](0);
@@ -198,6 +185,17 @@ contract Escrow is ReentrancyGuard{
     }
 
     // external views
+
+    function getTransactionParties(string calldata transactionId) external view returns (address[] memory){
+        Transaction memory specifiedTransaction = getTransactionFromTransactionId(transactionId);
+
+        address[] memory partiesArray = new address[](2);
+
+        partiesArray[0] = specifiedTransaction.sender;
+        partiesArray[1] = specifiedTransaction.receiver;
+
+        return partiesArray;
+    }
 
     function getJurorsForTransactionId(string calldata transactionId) external view returns (address[] memory jurorsForSpecifiedTransaction){
         Transaction memory specifiedTransaction = getTransactionFromTransactionId(transactionId);
@@ -282,7 +280,7 @@ contract Escrow is ReentrancyGuard{
 
             emit EscrowReleased(currentTransaction.receiver, transactionId, currentTransaction.amountInWei);
 
-            currentTransaction.moneyStatus = MoneyStatus.MONEY_RELEASED_TO_RECEIVER;
+            currentTransaction.moneyStatus = 1;
         }   
     }
 
@@ -383,12 +381,12 @@ contract Escrow is ReentrancyGuard{
         Transaction storage currentTransaction = getTransactionFromTransactionId(transactionId);
 
         require(
-            currentTransaction.moneyStatus == MoneyStatus.MONEY_IN_ESCROW,
+            currentTransaction.moneyStatus == 0,
             "Error: Arbitration request denied. Money was already paid out."
         );
 
         require(
-            currentTransaction.arbitrationStatus == ArbitrationStatus.NOT_IN_ARBITRATION,
+            currentTransaction.arbitrationStatus == 0,
             "Error: Arbitration was already requested for this transaction."
         );
 
@@ -420,7 +418,7 @@ contract Escrow is ReentrancyGuard{
         chosenArbitrator = chooseArbitrator(currentTransaction.sender, currentTransaction.receiver, randomNumbersFromRNRetailer[0]);
 
         currentTransaction.arbitrator = chosenArbitrator;
-        currentTransaction.arbitrationStatus = ArbitrationStatus.IN_ARBITRATION;
+        currentTransaction.arbitrationStatus = 1;
         currentTransaction.arbitrationStartBlock = block.number;
 
         emit ArbitrationInitiated(msg.sender, transactionId, chosenArbitrator);
@@ -430,14 +428,14 @@ contract Escrow is ReentrancyGuard{
         uint256 maxBasisPoints = localVariables[uint256(LocalVariablesIndex.MAXIMUM_BASIS_POINTS)];
 
         require(
-            basisPointsForSender <= maxBasisPoints,
-            "Error: Too many basis points."
+            (basisPointsForSender >= 0) && (basisPointsForSender <= maxBasisPoints),
+            "Error: makeArbitrationSplitDecision cannot give all of the money to one address. Use makeArbitrationSimpleDecision instead."
         );
 
         Transaction storage currentTransaction = getTransactionFromTransactionId(transactionId);
 
         require(
-            currentTransaction.moneyStatus == MoneyStatus.MONEY_IN_ESCROW,
+            currentTransaction.moneyStatus == 0,
             "Error: Arbitration request denied. Money was already paid out."
         );
 
@@ -448,16 +446,16 @@ contract Escrow is ReentrancyGuard{
 
         currentTransaction.senderCutInBps = basisPointsForSender;
 
-        currentTransaction.arbitrationStatus = ArbitrationStatus.ARBITRATION_COMPLETE;
+        currentTransaction.arbitrationStatus = 2;
         currentTransaction.arbitrationEndBlock = block.number;
 
-        MoneyStatus status = MoneyStatus.MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER;
+        uint8 status = 3;
 
         if(basisPointsForSender == 0){
-            status = MoneyStatus.MONEY_RELEASED_TO_RECEIVER;
+            status = 1;
         }
         else if(basisPointsForSender == maxBasisPoints){
-            status = MoneyStatus.MONEY_RETURNED_TO_SENDER;
+            status = 2;
         }
 
         emit ArbitrationDecided(msg.sender, transactionId, status);
@@ -554,7 +552,7 @@ contract Escrow is ReentrancyGuard{
         );
 
         if(payoutForSenderInWei == 0){
-            currentTransaction.moneyStatus = MoneyStatus.MONEY_RELEASED_TO_RECEIVER;
+            currentTransaction.moneyStatus = 1;
 
             require(
                 payable(currentTransaction.receiver).send(payoutForReceiverInWei),
@@ -562,7 +560,7 @@ contract Escrow is ReentrancyGuard{
             );
         }
         else if(payoutForReceiverInWei == 0){
-            currentTransaction.moneyStatus = MoneyStatus.MONEY_RETURNED_TO_SENDER;
+            currentTransaction.moneyStatus = 2;
 
             require(
                 payable(currentTransaction.sender).send(payoutForSenderInWei),
@@ -570,7 +568,7 @@ contract Escrow is ReentrancyGuard{
             );
         }
         else{
-            currentTransaction.moneyStatus = MoneyStatus.MONEY_RELEASED_PARTIALLY_TO_BOTH_SENDER_AND_RECEIVER;
+            currentTransaction.moneyStatus = 3;
 
             require(
                 payable(currentTransaction.receiver).send(payoutForReceiverInWei),
@@ -597,6 +595,11 @@ contract Escrow is ReentrancyGuard{
         require(
             currentTransaction.arbitrationEndBlock + localVariables[uint256(LocalVariablesIndex.STANDARD_EVENT_LENGTH)] < block.number,
             "Error: Please wait for the end of the grace period, which is STANDARD_EVENT_LENGTH blocks after currentTransaction.arbitrationEndBlock"
+        );
+
+        require(
+            currentTransaction.trialStatus != TrialStatus.TRIAL_ONGOING, 
+            "Error: You cannot request payout while there is a trial ongoing."
         );
 
         completePayoutAfterArbitration(currentTransaction);
@@ -685,7 +688,7 @@ contract Escrow is ReentrancyGuard{
         );
 
         require(
-            currentTransaction.arbitrationStatus == ArbitrationStatus.ARBITRATION_COMPLETE, 
+            currentTransaction.arbitrationStatus == 2, 
             "Arbitration must have already completed before a jury trial can be requested."
         );
 
@@ -695,7 +698,7 @@ contract Escrow is ReentrancyGuard{
         );
 
         require(
-            currentTransaction.moneyStatus == MoneyStatus.MONEY_IN_ESCROW,
+            currentTransaction.moneyStatus == 0,
             "Error: The money was already paid out. A trial is not possible."
         );
 
@@ -756,7 +759,7 @@ contract Escrow is ReentrancyGuard{
                 finalVote = JuryVote.DECISION_WAS_INVALID;
             }
 
-            completeTrial(currentTransaction, juryPool, finalVote, proof, rc);
+            completeTrial(transactionId, currentTransaction, juryPool, finalVote, proof, rc);
             emit JuryDecided(transactionId, juryPool, finalVote);
         }
     }
@@ -813,7 +816,7 @@ contract Escrow is ReentrancyGuard{
         selectJury(transactionId, currentTransaction, proof, rc);
     }
 
-    function completeTrial(Transaction storage currentTransaction, address[] memory juryPool, JuryVote finalVote, RandomNumberRetailerInterface.Proof memory proof, RandomNumberRetailerInterface.RequestCommitment memory rc) private{
+    function completeTrial(string calldata transactionId, Transaction storage currentTransaction, address[] memory juryPool, JuryVote finalVote, RandomNumberRetailerInterface.Proof memory proof, RandomNumberRetailerInterface.RequestCommitment memory rc) private{
         if(finalVote == JuryVote.DECISION_WAS_VALID){
             // pay out the money as the previous arbitrator decided and mark the transaction as TRIAL_DECIDED
 
@@ -839,12 +842,14 @@ contract Escrow is ReentrancyGuard{
             address newArbitrator = chooseArbitrator(currentTransaction.sender, currentTransaction.receiver, randomNumbers[0]);
             currentTransaction.arbitrator = newArbitrator;
 
-            currentTransaction.arbitrationStatus = ArbitrationStatus.IN_ARBITRATION;
+            currentTransaction.arbitrationStatus = 1;
             currentTransaction.senderCutInBps = 0;
             currentTransaction.arbitrationStartBlock = block.number;
             currentTransaction.juryPool = new address[](0);
             currentTransaction.juryVotes = new JuryVote[](0);
             currentTransaction.trialStatus = TrialStatus.TRIAL_HAS_NOT_BEEN_INVOKED;
+
+            emit ArbitrationInitiated(msg.sender, transactionId, newArbitrator);
         }
 
         // pay the jury
