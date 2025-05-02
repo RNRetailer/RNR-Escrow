@@ -336,9 +336,9 @@
 <script src="https://cdn.jsdelivr.net/npm/web3@4.12.0/dist/web3.min.js"></script>
 
 <script>
-        const rnrContractAddress = '0xd058eA7e3DfE100775Ce954F15bB88257CC10191';
-        const escrowContractAddress = '0x81f234777EB44BD312bd4F6c9AF1821405f1fEaE';
-        const helperContractAddress = '0x8A1C5506269C495D8e736DBd5Db97FB7514365cD';
+        const rnrContractAddress = '0xC235095838e55A28eC57468CEbBFAFB455F363E3';
+        const escrowContractAddress = '0xB5670E8Aa9d2Dc9d2Ea733cbEAd6AaceD2AD81f2';
+        const helperContractAddress = '0x08Dc774B8eb9f70318c94C467368b5B3ac1E27F1';
         const chainID = 11155111;
 
         const escrowAbi = [
@@ -1511,645 +1511,639 @@
         ];
 
         const rnrAbi = [
-            {
-                "inputs": [],
-                "stateMutability": "nonpayable",
-                "type": "constructor"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "blockNum",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "BlockhashNotInStore",
-                "type": "error"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    }
-                ],
-                "name": "OwnershipTransferRequested",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "from",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    }
-                ],
-                "name": "OwnershipTransferred",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "uint256",
-                        "name": "requestId",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "outputSeed",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint96",
-                        "name": "payment",
-                        "type": "uint96"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "bool",
-                        "name": "success",
-                        "type": "bool"
-                    }
-                ],
-                "name": "RandomWordsFulfilled",
-                "type": "event"
-            },
-            {
-                "anonymous": false,
-                "inputs": [
-                    {
-                        "indexed": true,
-                        "internalType": "address",
-                        "name": "requestor",
-                        "type": "address"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "weiPaid",
-                        "type": "uint256"
-                    },
-                    {
-                        "indexed": false,
-                        "internalType": "uint256",
-                        "name": "amountOfRandomNumbersReturned",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "RandomWordsReturnedSync",
-                "type": "event"
-            },
-            {
-                "inputs": [],
-                "name": "BLOCKHASH_STORE",
-                "outputs": [
-                    {
-                        "internalType": "contract BlockhashStoreInterface",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "acceptOwnership",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "contractIsPaused",
-                "outputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "",
-                        "type": "bool"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "components": [
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "pk",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "gamma",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "c",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "s",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "seed",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "uWitness",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "cGammaWitness",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "sHashWitness",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "zInv",
-                                "type": "uint256"
-                            }
-                        ],
-                        "internalType": "struct VRF.Proof",
-                        "name": "proof",
-                        "type": "tuple"
-                    },
-                    {
-                        "components": [
-                            {
-                                "internalType": "uint64",
-                                "name": "blockNum",
-                                "type": "uint64"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "subId",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint32",
-                                "name": "callbackGasLimit",
-                                "type": "uint32"
-                            },
-                            {
-                                "internalType": "uint32",
-                                "name": "numWords",
-                                "type": "uint32"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "sender",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "extraArgs",
-                                "type": "bytes"
-                            }
-                        ],
-                        "internalType": "struct RandomNumberRetailer.RequestCommitment",
-                        "name": "rc",
-                        "type": "tuple"
-                    }
-                ],
-                "name": "fulfillRandomWords",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256[2]",
-                        "name": "publicKey",
-                        "type": "uint256[2]"
-                    }
-                ],
-                "name": "hashOfKey",
-                "outputs": [
-                    {
-                        "internalType": "bytes32",
-                        "name": "",
-                        "type": "bytes32"
-                    }
-                ],
-                "stateMutability": "pure",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "minimumHealthyLengthOfRandomNumbersArray",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "minimumViablePriceOfARandomNumberInWei",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "mostRecentRequestId",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "owner",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "bool",
-                        "name": "shouldBePaused",
-                        "type": "bool"
-                    }
-                ],
-                "name": "pauseOrUnpauseContract",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "priceMultiplier",
-                "outputs": [
-                    {
-                        "internalType": "uint8",
-                        "name": "",
-                        "type": "uint8"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "priceOfARandomNumberInWei",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "randomNumbersAvailable",
-                "outputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amountOfRandomNumbersAvailable",
-                        "type": "uint256"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [],
-                "name": "replacementContractAddress",
-                "outputs": [
-                    {
-                        "internalType": "address",
-                        "name": "",
-                        "type": "address"
-                    }
-                ],
-                "stateMutability": "view",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amountOfRandomNumbersToRequest",
-                        "type": "uint256"
-                    },
-                    {
-                        "internalType": "uint256[]",
-                        "name": "randomSeedArray",
-                        "type": "uint256[]"
-                    }
-                ],
-                "name": "requestRandomNumbersSynchronous",
-                "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "randomNumbersToReturn",
-                        "type": "uint256[]"
-                    }
-                ],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "amountOfRandomNumbersToRequest",
-                        "type": "uint256"
-                    },
-                    {
-                        "components": [
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "pk",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "gamma",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "c",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "s",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "seed",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "uWitness",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "cGammaWitness",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256[2]",
-                                "name": "sHashWitness",
-                                "type": "uint256[2]"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "zInv",
-                                "type": "uint256"
-                            }
-                        ],
-                        "internalType": "struct VRF.Proof",
-                        "name": "proof",
-                        "type": "tuple"
-                    },
-                    {
-                        "components": [
-                            {
-                                "internalType": "uint64",
-                                "name": "blockNum",
-                                "type": "uint64"
-                            },
-                            {
-                                "internalType": "uint256",
-                                "name": "subId",
-                                "type": "uint256"
-                            },
-                            {
-                                "internalType": "uint32",
-                                "name": "callbackGasLimit",
-                                "type": "uint32"
-                            },
-                            {
-                                "internalType": "uint32",
-                                "name": "numWords",
-                                "type": "uint32"
-                            },
-                            {
-                                "internalType": "address",
-                                "name": "sender",
-                                "type": "address"
-                            },
-                            {
-                                "internalType": "bytes",
-                                "name": "extraArgs",
-                                "type": "bytes"
-                            }
-                        ],
-                        "internalType": "struct RandomNumberRetailer.RequestCommitment",
-                        "name": "rc",
-                        "type": "tuple"
-                    }
-                ],
-                "name": "requestRandomNumbersSynchronousUsingVRFv2Seed",
-                "outputs": [
-                    {
-                        "internalType": "uint256[]",
-                        "name": "randomNumbersToReturn",
-                        "type": "uint256[]"
-                    }
-                ],
-                "stateMutability": "payable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_amountOfGasUsedForAFulfillRandomNumbersTransaction",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setAmountOfGasUsedForAFulfillRandomNumbersTransaction",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_maximumCostOfSendInWei",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setMaximumCostOfSendInWei",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint32",
-                        "name": "_maximumNumbersThatCanBeFulfilledInOneTransaction",
-                        "type": "uint32"
-                    }
-                ],
-                "name": "setMaximumNumbersThatCanBeFulfilledInOneTransaction",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_minimumHealthyLengthOfRandomNumbersArray",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setMinimumHealthyLengthOfRandomNumbersArray",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_minimumServerBalanceInWei",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setMinimumServerBalanceInWei",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "_minimumViablePriceOfARandomNumberInWei",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "setMinimumViablePriceOfARandomNumberInWei",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint8",
-                        "name": "_priceMultiplier",
-                        "type": "uint8"
-                    }
-                ],
-                "name": "setPriceMultiplier",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "_replacementContractAddress",
-                        "type": "address"
-                    }
-                ],
-                "name": "setReplacementContractAddress",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "address",
-                        "name": "to",
-                        "type": "address"
-                    }
-                ],
-                "name": "transferOwnership",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            },
-            {
-                "inputs": [
-                    {
-                        "internalType": "uint256",
-                        "name": "weiToWithdraw",
-                        "type": "uint256"
-                    }
-                ],
-                "name": "withdrawETHToOwner",
-                "outputs": [],
-                "stateMutability": "nonpayable",
-                "type": "function"
-            }
-        ];
+	{
+		"inputs": [],
+		"stateMutability": "nonpayable",
+		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "blockNum",
+				"type": "uint256"
+			}
+		],
+		"name": "BlockhashNotInStore",
+		"type": "error"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferRequested",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "from",
+				"type": "address"
+			},
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "OwnershipTransferred",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "uint256",
+				"name": "requestId",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "outputSeed",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint96",
+				"name": "payment",
+				"type": "uint96"
+			},
+			{
+				"indexed": false,
+				"internalType": "bool",
+				"name": "success",
+				"type": "bool"
+			}
+		],
+		"name": "RandomWordsFulfilled",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": true,
+				"internalType": "address",
+				"name": "requestor",
+				"type": "address"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "weiPaid",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "amountOfRandomNumbersReturned",
+				"type": "uint256"
+			}
+		],
+		"name": "RandomWordsReturnedSync",
+		"type": "event"
+	},
+	{
+		"inputs": [],
+		"name": "BLOCKHASH_STORE",
+		"outputs": [
+			{
+				"internalType": "contract BlockhashStoreInterface",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "acceptOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "contractIsPaused",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"components": [
+					{
+						"internalType": "uint256[2]",
+						"name": "pk",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256[2]",
+						"name": "gamma",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "c",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "s",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "seed",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "uWitness",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256[2]",
+						"name": "cGammaWitness",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256[2]",
+						"name": "sHashWitness",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "zInv",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct VRF.Proof",
+				"name": "proof",
+				"type": "tuple"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint64",
+						"name": "blockNum",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint256",
+						"name": "subId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint32",
+						"name": "callbackGasLimit",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "numWords",
+						"type": "uint32"
+					},
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes",
+						"name": "extraArgs",
+						"type": "bytes"
+					}
+				],
+				"internalType": "struct RandomNumberRetailer.RequestCommitment",
+				"name": "rc",
+				"type": "tuple"
+			}
+		],
+		"name": "fulfillRandomWords",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256[2]",
+				"name": "publicKey",
+				"type": "uint256[2]"
+			}
+		],
+		"name": "hashOfKey",
+		"outputs": [
+			{
+				"internalType": "bytes32",
+				"name": "",
+				"type": "bytes32"
+			}
+		],
+		"stateMutability": "pure",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "minimumHealthyLengthOfRandomNumbersArray",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "minimumViablePriceOfARandomNumberInWei",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "mostRecentRequestId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "owner",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "bool",
+				"name": "shouldBePaused",
+				"type": "bool"
+			}
+		],
+		"name": "pauseOrUnpauseContract",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "priceMultiplier",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "priceOfARandomNumberInWei",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "randomNumbersAvailable",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "amountOfRandomNumbersAvailable",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "randomNumbersPerRando",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "replacementContractAddress",
+		"outputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "amountOfRandomNumbersToRequest",
+				"type": "uint256"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint256[2]",
+						"name": "pk",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256[2]",
+						"name": "gamma",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "c",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "s",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint256",
+						"name": "seed",
+						"type": "uint256"
+					},
+					{
+						"internalType": "address",
+						"name": "uWitness",
+						"type": "address"
+					},
+					{
+						"internalType": "uint256[2]",
+						"name": "cGammaWitness",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256[2]",
+						"name": "sHashWitness",
+						"type": "uint256[2]"
+					},
+					{
+						"internalType": "uint256",
+						"name": "zInv",
+						"type": "uint256"
+					}
+				],
+				"internalType": "struct VRF.Proof",
+				"name": "proof",
+				"type": "tuple"
+			},
+			{
+				"components": [
+					{
+						"internalType": "uint64",
+						"name": "blockNum",
+						"type": "uint64"
+					},
+					{
+						"internalType": "uint256",
+						"name": "subId",
+						"type": "uint256"
+					},
+					{
+						"internalType": "uint32",
+						"name": "callbackGasLimit",
+						"type": "uint32"
+					},
+					{
+						"internalType": "uint32",
+						"name": "numWords",
+						"type": "uint32"
+					},
+					{
+						"internalType": "address",
+						"name": "sender",
+						"type": "address"
+					},
+					{
+						"internalType": "bytes",
+						"name": "extraArgs",
+						"type": "bytes"
+					}
+				],
+				"internalType": "struct RandomNumberRetailer.RequestCommitment",
+				"name": "rc",
+				"type": "tuple"
+			},
+			{
+				"internalType": "bool",
+				"name": "payWithRando",
+				"type": "bool"
+			}
+		],
+		"name": "requestRandomNumbersSynchronousUsingVRFv2Seed",
+		"outputs": [
+			{
+				"internalType": "uint256[]",
+				"name": "randomNumbersToReturn",
+				"type": "uint256[]"
+			}
+		],
+		"stateMutability": "payable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_amountOfGasUsedForAFulfillRandomNumbersTransaction",
+				"type": "uint256"
+			}
+		],
+		"name": "setAmountOfGasUsedForAFulfillRandomNumbersTransaction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_maximumCostOfSendInWei",
+				"type": "uint256"
+			}
+		],
+		"name": "setMaximumCostOfSendInWei",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint32",
+				"name": "_maximumNumbersThatCanBeFulfilledInOneTransaction",
+				"type": "uint32"
+			}
+		],
+		"name": "setMaximumNumbersThatCanBeFulfilledInOneTransaction",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_minimumHealthyLengthOfRandomNumbersArray",
+				"type": "uint256"
+			}
+		],
+		"name": "setMinimumHealthyLengthOfRandomNumbersArray",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_minimumServerBalanceInWei",
+				"type": "uint256"
+			}
+		],
+		"name": "setMinimumServerBalanceInWei",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "_minimumViablePriceOfARandomNumberInWei",
+				"type": "uint256"
+			}
+		],
+		"name": "setMinimumViablePriceOfARandomNumberInWei",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint8",
+				"name": "_priceMultiplier",
+				"type": "uint8"
+			}
+		],
+		"name": "setPriceMultiplier",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "_replacementContractAddress",
+				"type": "address"
+			}
+		],
+		"name": "setReplacementContractAddress",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "to",
+				"type": "address"
+			}
+		],
+		"name": "transferOwnership",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "weiToWithdraw",
+				"type": "uint256"
+			}
+		],
+		"name": "withdrawETHToOwner",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
+	}
+];
 
         const helperAbi = [
             {
