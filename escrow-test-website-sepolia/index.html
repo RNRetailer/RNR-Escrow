@@ -632,6 +632,19 @@
 	},
 	{
 		"inputs": [],
+		"name": "randomNumbersPerRando",
+		"outputs": [
+			{
+				"internalType": "uint8",
+				"name": "",
+				"type": "uint8"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
 		"name": "replacementContractAddress",
 		"outputs": [
 			{
@@ -641,30 +654,6 @@
 			}
 		],
 		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [
-			{
-				"internalType": "uint256",
-				"name": "amountOfRandomNumbersToRequest",
-				"type": "uint256"
-			},
-			{
-				"internalType": "uint256[]",
-				"name": "randomSeedArray",
-				"type": "uint256[]"
-			}
-		],
-		"name": "requestRandomNumbersSynchronous",
-		"outputs": [
-			{
-				"internalType": "uint256[]",
-				"name": "randomNumbersToReturn",
-				"type": "uint256[]"
-			}
-		],
-		"stateMutability": "payable",
 		"type": "function"
 	},
 	{
@@ -762,6 +751,11 @@
 				"internalType": "struct RandomNumberRetailer.RequestCommitment",
 				"name": "rc",
 				"type": "tuple"
+			},
+			{
+				"internalType": "bool",
+				"name": "payWithRando",
+				"type": "bool"
 			}
 		],
 		"name": "requestRandomNumbersSynchronousUsingVRFv2Seed",
